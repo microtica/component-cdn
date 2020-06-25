@@ -1,4 +1,7 @@
 
+runtime:
+    computeType: "BUILD_GENERAL1_SMALL"
+
 stages:
     - build
     - infrastructure

@@ -9,7 +9,7 @@ stages:
 
 steps:
     BuildApp:
-        image: nodejs
+        image: node:12-alpine
         stage: build
         commands:
             - cd my-app
@@ -17,7 +17,7 @@ steps:
             - npm run build
     
     CreateInfrastructure:
-        image: hashicorp/terraform
+        image: hashicorp/terraform:latest
         stage: infrastructure
         commands:
             - cd infra

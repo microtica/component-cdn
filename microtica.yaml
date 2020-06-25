@@ -1,0 +1,30 @@
+
+stages:
+    - build
+    - infrastructure
+    - deploy
+
+steps:
+    BuildApp:
+        image: nodejs
+        stage: build
+        commands:
+            - cd my-app
+            - npm install
+            - npm run build
+    
+    CreateInfrastructure:
+        image: hashicorp/terraform
+        stage: infrastructure
+        commands:
+            - cd infra
+            - terraform init
+            - terraform plan
+            - terraform apply -auto-approve
+    
+    Deploy:
+        image: aws/codebuild/standard:4.0
+        stage: deploy
+        commands:
+            - aws s3 sync my-app/build s3://my-website-bucket-11234565432 --acl public-read
+

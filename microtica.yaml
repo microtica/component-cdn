@@ -9,7 +9,7 @@ stages:
 
 steps:
     BuildApp:
-        image: node:12-alpine
+        image: aws/codebuild/standard:4.0
         stage: build
         commands:
             - cd my-app

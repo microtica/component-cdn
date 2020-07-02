@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "website-bucket" {
-  bucket = "my-website-bucket-11234565432"
+  bucket = "my-website-bucket-11234565433"
   acl    = "public-read"
 
   website {

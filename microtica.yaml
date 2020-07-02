@@ -29,5 +29,5 @@ steps:
         image: aws/codebuild/standard:4.0
         stage: deploy
         commands:
-            - aws s3 sync my-app/build s3://my-website-bucket-11234565432 --acl public-read
+            - aws s3 sync my-app/build s3://my-website-bucket-11234565433 --acl public-read
 

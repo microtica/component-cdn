@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 
-resource "aws_s3_bucket" "website-bucket" {
+resource "aws_s3_bucket" "website-bucket-tf-state" {
   bucket = "my-website-bucket-tf-state-11234565433"
   
   versioning {

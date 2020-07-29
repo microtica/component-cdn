@@ -6,9 +6,9 @@ provider "aws" {
 terraform {
  backend "s3" {
    encrypt = true
-   bucket = "my-website-bucket-tf-state-11234565433"
+   bucket = "ap-andrej-artifact"
    region = "eu-central-1"
-   key = "state"
+   key = "tf-state"
  }
 }
 

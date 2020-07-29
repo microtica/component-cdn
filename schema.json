@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "schema://microtica/microtica-dashboard.json",
+    "title": "Component Schema",
+    "type": "object",
+    "properties": {
+        "inputs": {
+            "type": "object",
+            "properties": {
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+            }
+        },
+        "outputs": {
+            "type": "object",
+            "properties": {
+            }
+        }
+    },
+    "additionalProperties": false
+}

@@ -7,6 +7,12 @@
         "inputs": {
             "type": "object",
             "properties": {
+                "stageId": {
+                    "type": "string"
+                },
+                "resourceId": {
+                    "type": "string"
+                }
             }
         },
         "parameters": {

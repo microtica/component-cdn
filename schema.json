@@ -7,17 +7,17 @@
         "inputs": {
             "type": "object",
             "properties": {
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
                 "stageId": {
                     "type": "string"
                 },
                 "resourceId": {
                     "type": "string"
                 }
-            }
-        },
-        "parameters": {
-            "type": "object",
-            "properties": {
             }
         },
         "outputs": {

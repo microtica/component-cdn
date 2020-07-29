@@ -3,15 +3,6 @@ provider "aws" {
   region  = "eu-central-1"
 }
 
-
-resource "aws_s3_bucket" "website-bucket-tf-state" {
-  bucket = "my-website-bucket-tf-state-11234565433"
-  
-  versioning {
-    enabled = true
-  }
-}
-
 terraform {
  backend "s3" {
    encrypt = true

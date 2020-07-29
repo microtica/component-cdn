@@ -7,6 +7,9 @@
         "inputs": {
             "type": "object",
             "properties": {
+                "placeholder": {
+                    "type": "string"
+                }
             }
         },
         "parameters": {
@@ -23,6 +26,9 @@
         "outputs": {
             "type": "object",
             "properties": {
+                "placeholder": {
+                    "type": "string"
+                }
             }
         }
     },

@@ -16,8 +16,8 @@ terraform {
  backend "s3" {
    encrypt = true
    bucket = "my-website-bucket-tf-state-11234565433"
-   region = eu-central-1
-   key = state
+   region = "eu-central-1"
+   key = "state"
  }
 }
 

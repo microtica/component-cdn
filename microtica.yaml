@@ -17,8 +17,8 @@ steps:
             - npm run build
         artifacts:
             files:
-                package: my-app/build/**/*
-    
+                build_folder: "**/*"
+
     CreateInfrastructure:
         image: hashicorp/terraform:latest
         stage: infrastructure

@@ -4,6 +4,8 @@ runtime:
 
 stages:
     - build
+    - package
+    - deploy
 
 steps:
     BuildApp:
@@ -19,7 +21,7 @@ steps:
 
     DockerPush:
         type: docker-push
-        stage: build
+        stage: package
         image_name: microtica/my_test_image
         tag: v0.0.1
 

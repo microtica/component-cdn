@@ -23,4 +23,3 @@ steps:
         stage: package
         image_name: microtica/my_test_image
         tag: v0.0.2
-

@@ -4,8 +4,6 @@ runtime:
 
 stages:
     - build
-    - infrastructure
-    - deploy
 
 steps:
     BuildApp:

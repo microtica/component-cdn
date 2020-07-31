@@ -24,3 +24,4 @@ steps:
         image_name: microtica/my_test_image
         tag: v0.0.2
         dockerfile: my-app/Dockerfile
+        build_context: my-app

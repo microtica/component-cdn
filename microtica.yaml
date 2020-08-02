@@ -15,5 +15,5 @@ steps:
             - npm run build
         artifacts:
             files:
-                build_folder.zip: "my-app/build/"
+                build_folder.zip: "my-app/build"
             json: "package.json"

@@ -15,5 +15,7 @@ steps:
             - npm run build
         artifacts:
             files:
-                build_folder.zip: "my-app/build"
+                json_files.zip: "my-app/build/*.json"
+                js_files_zip: "my-app/build/*.js"
+                static_files_zip: "my-app/build/static/"
             json: "package.json"

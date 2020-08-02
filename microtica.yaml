@@ -1,11 +1,19 @@
 
+runtime:
+    computeType: "BUILD_GENERAL1_SMALL"
+
 stages:
+    - build
     - package
 
 steps:
-    DockerPush:
-        type: docker-push
-        stage: package
-        image_name: microtica/my_test_image
-        tag: v0.0.2
-        registry: microtica-ecr
+    BuildApp:
+        image: aws/codebuild/standard:4.0
+        stage: build
+        commands:
+            - cd my-app
+            - npm install
+            - npm run build
+        artifacts:
+            files:
+                build_folder.zip: "my-app/build/"

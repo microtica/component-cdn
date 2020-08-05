@@ -10,6 +10,7 @@ steps:
         image: aws/codebuild/standard:4.0
         stage: build
         commands:
+            - env
             - cd my-app
             - npm install
             - npm run build

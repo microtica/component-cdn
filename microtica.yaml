@@ -8,7 +8,7 @@ stages:
 
 steps:
     BuildApp:
-        image: aws/codebuild/standard:4.0
+        image: node:12.18.3-alpine3.11
         stage: build
         commands:
             - ls -l

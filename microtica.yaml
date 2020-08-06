@@ -4,6 +4,7 @@ runtime:
 
 stages:
     - build
+    - analyse
 
 steps:
     BuildApp:
@@ -15,10 +16,10 @@ steps:
             - npm run build
     PackageApp:
         image: aws/codebuild/standard:4.0
-        stage: build
+        stage: analyse
         commands:
             - ls -l
-            - touch new_file.txt
+            - echo Analysing code...
         artifacts:
             files:
                 whole_package.zip: "./"

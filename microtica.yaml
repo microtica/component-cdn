@@ -10,10 +10,15 @@ steps:
         image: aws/codebuild/standard:4.0
         stage: build
         commands:
-            - env
             - cd my-app
             - npm install
             - npm run build
+    PackageApp:
+        image: aws/codebuild/standard:4.0
+        stage: build
+        commands:
+            - ls -l
+            - touch new_file.txt
         artifacts:
             files:
                 whole_package.zip: "./"

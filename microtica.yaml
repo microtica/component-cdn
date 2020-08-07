@@ -3,25 +3,22 @@ runtime:
     computeType: "BUILD_GENERAL1_SMALL"
 
 stages:
+    - clone
     - build
     - analyse
 
 steps:
+    CloneRepo:
+        type: git-clone
+        stage: clone
+        repo: radedespo/cfn
+        git: github
+
     BuildApp:
         image: node:12.18.3-alpine3.11
         stage: build
         commands:
             - ls -l
-            - cd my-app
+            - cd cfn
             - npm install
-            - npm run build
-    PackageApp:
-        image: aws/codebuild/standard:4.0
-        stage: analyse
-        commands:
-            - ls -l
-            - echo Analysing code...
-        artifacts:
-            files:
-                whole_package.zip: "./"
-            json: "package.json"
+            - npm test

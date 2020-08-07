@@ -5,7 +5,6 @@ runtime:
 stages:
     - clone
     - build
-    - analyse
 
 steps:
     CloneRepo:

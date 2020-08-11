@@ -1,23 +1,9 @@
 
-runtime:
-    computeType: "BUILD_GENERAL1_SMALL"
-
 stages:
-    - clone
-    - build
+    - package
 
 steps:
     CloneRepo:
-        type: git-clone
-        stage: clone
-        repo: radedespo/cfn
-        git: github
-
-    BuildApp:
-        image: node:12.18.3-alpine3.11
-        stage: build
-        commands:
-            - ls -l
-            - cd cfn
-            - npm install
-            - npm test
+        type: docker-push
+        stage: package
+        image_name: microtica/pipeline-test

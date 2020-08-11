@@ -7,3 +7,4 @@ steps:
         type: docker-push
         stage: package
         image_name: microtica/pipeline-test
+        tag: v0.1.0

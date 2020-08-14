@@ -3,9 +3,7 @@ stages:
     - package
 
 steps:
-    CloneRepo:
-        type: docker-push
+    Component:
+        type: component
         stage: package
-        image_name: microtica/pipeline-test
-        tag: v0.1.4
-        registry: ecr
+        cfn_path: cfn-template.json

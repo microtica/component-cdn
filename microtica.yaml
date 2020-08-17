@@ -1,6 +1,7 @@
 stages:
     - build
     - test
+    - analyse
     - package
 
 steps:
@@ -25,12 +26,18 @@ steps:
         image: node:14.8.0-alpine
         stage: test
         commands:
-            - npm test
+            - echo TEST
         artifacts:
             files:
                 test-package.zip: ./
                 package_file: package.json
             json: package.json
+
+    AnalyzeApp:
+        image: node:14.8.0-alpine
+        stage: analyse
+        commands:
+            - echo analyze my code
 
     Component:
         title: Package Microtica component

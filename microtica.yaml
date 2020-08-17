@@ -1,27 +1,36 @@
 stages:
-    - package
-    - pre-build
-    - post-build
+    - build
     - test
+    - package
 
 steps:
     Build:
         image: node:14.8.0-alpine
-        stage: pre-build
+        stage: build
         commands:
             - echo pre build
             - npm install
     BuildAgain:
         image: node:14.8.0-alpine
-        stage: post-build
+        stage: build
         commands:
             - echo post build
             - npm install
+        artifacts:
+            files:
+                package.zip: ./
+                file: package.json
+            json: schema.json
     Test:
         image: node:14.8.0-alpine
         stage: test
         commands:
             - npm test
+        artifacts:
+            files:
+                test-package.zip: ./
+                package_file: package.json
+            json: package.json
 
     Component:
         title: Package Microtica component

@@ -7,4 +7,5 @@ steps:
         title: Package Microtica component
         type: component
         stage: package
-        cfn_path: cfn-template.json
+        cfn: cfn-template.json
+        schema: schema.json

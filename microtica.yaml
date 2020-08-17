@@ -1,14 +1,30 @@
-
 stages:
     - package
+    - pre-build
+    - post-build
+    - test
 
 steps:
+    Build:
+        image: node:14.8.0-alpine
+        stage: pre-build
+        commands:
+            - echo pre build
+            - npm install
+    BuildAgain:
+        image: node:14.8.0-alpine
+        stage: post-build
+        commands:
+            - echo post build
+            - npm install
+    Test:
+        image: node:14.8.0-alpine
+        stage: test
+        commands:
+            - npm test
+
     Component:
         title: Package Microtica component
+        type: component
         stage: package
-        commands:
-            - echo TEST
-        artifacts:
-            files:
-                package: ./
-                cfn_template: cfn-template.json
+        cfn_template: cfn-template.json

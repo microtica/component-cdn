@@ -7,7 +7,7 @@ stages:
 steps:
     Build:
         image: node:14.8.0-alpine
-        title: This is my build step"
+        title: This is my build step" 
         stage: build
         commands:
             - echo pre build

@@ -1,10 +1,15 @@
 stages:
+    - clone
     - build
     - test
     - analyse
     - package
 
 steps:
+    Clone:
+        type: git-clone
+        stage: clone
+        
     Build:
         image: node:14.8.0-alpine
         title: This is my build step"

@@ -9,13 +9,14 @@ steps:
     Clone:
         type: git-clone
         stage: clone
-        
+
     Build:
         image: node:14.8.0-alpine
         title: This is my build step"
         stage: build
         commands:
             - echo pre build
+            - ls -l
             - npm install
     BuildAgain:
         image: node:14.8.0-alpine

@@ -2,7 +2,7 @@ stages:
     - clone
     - build
     - test
-    - analyse
+    - package-docker
     - package
 
 steps:
@@ -40,11 +40,11 @@ steps:
                 package_file: package.json
             json: package.json
 
-    AnalyzeApp:
-        image: node:14.8.0-alpine
-        stage: analyse
-        commands:
-            - echo analyze my code
+    PackageAppInDocker:
+        type: docker-push
+        stage: package-docker
+        image_name: microtica/pipeline-test
+        registry: dockerhub
 
     Component:
         title: Package Microtica component

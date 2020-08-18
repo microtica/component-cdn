@@ -12,17 +12,19 @@ steps:
 
     Build:
         image: node:14.8.0-alpine
-        title: This is my build step" 
+        title: This is my build step"
         stage: build
         commands:
             - echo pre build
             - ls -l
+            - cd component-spa
             - npm install
     BuildAgain:
         image: node:14.8.0-alpine
         stage: build
         commands:
             - echo post build
+            - cd component-spa
             - npm install
         artifacts:
             files:
@@ -36,7 +38,7 @@ steps:
             - echo TEST
         artifacts:
             files:
-                test-package.zip: ./
+                test-package.zip: component-spa
                 package_file: package.json
             json: package.json
 
@@ -50,4 +52,4 @@ steps:
         title: Package Microtica component
         type: component
         stage: package
-        cfn_template: cfn-template.json
+        cfn_template: component-spa/cfn-template.json

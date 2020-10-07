@@ -9,154 +9,20 @@
         "resourceId": {
             "Type": "String",
             "Description": "Unique ID of Microtica component"
-        },
-        "securityGroupId": {
-            "Type": "String",
-            "Description": "Security group which defines the Lambda access in the VPC"
-        },
-        "vpcId": {
-            "Type": "String",
-            "Description": "ID of the VPC"
-        },
-        "subnet1Id": {
-            "Type": "String",
-            "Description": "ID of the Subnet 1"
-        },
-        "subnet2Id": {
-            "Type": "String",
-            "Description": "ID of the Subnet 2"
-        },
-        "apiBucket": {
-            "Type": "String",
-            "Description": "Bucket name of Lambda function artifact"
-        },
-        "apiPath": {
-            "Type": "String",
-            "Description": "Location of Lambda function artifact. Should be ZIP file"
-        },
-        "sfProcessorBucket": {
-            "Type": "String",
-            "Description": "Bucket name of Lambda function artifact"
-        },
-        "sfProcessorPath": {
-            "Type": "String",
-            "Description": "Location of Lambda function artifact. Should be ZIP file"
-        },
-        "webhookBucket": {
-            "Type": "String",
-            "Description": "Bucket name of Lambda function artifact"
-        },
-        "webhookPath": {
-            "Type": "String",
-            "Description": "Location of Lambda function artifact. Should be ZIP file"
-        },
-        "startExecutionStepBucket": {
-            "Type": "String",
-            "Description": "Bucket name of Lambda function artifact"
-        },
-        "startExecutionStepPath": {
-            "Type": "String",
-            "Description": "Location of Lambda function artifact. Should be ZIP file"
-        },
-        "endExecutionStepBucket": {
-            "Type": "String",
-            "Description": "Bucket name of Lambda function artifact"
-        },
-        "endExecutionStepPath": {
-            "Type": "String",
-            "Description": "Location of Lambda function artifact. Should be ZIP file"
-        },
-        "domainName": {
-            "Type": "String",
-            "Description": "Full domain name of the API Gateway",
-            "Default": ""
-        },
-        "zoneName": {
-            "Type": "String",
-            "Description": "Zone name of the API Gateway",
-            "Default": ""
-        },
-        "bitBucketClientId": {
-            "Type": "String",
-            "Description": "Bitbucket client ID used in API Lambda"
-        },
-        "bitBucketClientSecret": {
-            "Type": "String",
-            "Description": "Bitbucket client secret used in API Lambda"
-        },
-        "gitHubClientId": {
-            "Type": "String",
-            "Description": "GitHub client ID used in API Lambda"
-        },
-        "gitHubClientSecret": {
-            "Type": "String",
-            "Description": "GitHub client secret used in API Lambda"
-        },
-        "webHookTriggerUrl": {
-            "Type": "String",
-            "Description": "Trigger url attached to the webhook"
-        },
-        "micTenantId": {
-            "Type": "String",
-            "Description": "The Microtica Tenant ID",
-            "Default": "microtica-prod"
-        },
-        "snsTopic": {
-            "Type": "String",
-            "Description": "Microtica SNS Event Bus"
-        },
-        "micCloudRegion": {
-            "Type": "String",
-            "Description": "Microtica AWS Cloud Region"
-        },
-        "buildIdIndex": {
-            "Type": "String",
-            "Description": "Global Secondary index of pipeline build table",
-            "Default": "BuildIdIndex"
-        },
-        "projectIdIndex": {
-            "Type": "String",
-            "Description": "Global Secondary index of pipeline build table",
-            "Default": "ProjectIdIndex"
-        },
-        "projectIdMicEntityIdIndex": {
-            "Type": "String",
-            "Description": "Global Secondary index of pipeline build table",
-            "Default": "ProjectIdMicEntityIdIndex"
-        },
-        "micEntityIdIndex": {
-            "Type": "String",
-            "Description": "Global Secondary index of pipeline build table",
-            "Default": "MicEntityIdIndex"
-        },
-        "enableScaling": {
-            "Type": "String",
-            "Description": "Should DynamoDB tables scale in available read/write capacity.",
-            "AllowedValues": [
-                "true",
-                "false"
-            ],
-            "Default": "false"
-        },
-        "msAwsUrl": {
-            "Type": "String",
-            "Description": "Ms Aws Service access URL"
-        },
-        "msApUrl": {
-            "Type": "String",
-            "Description": "MS Advanced Pipeline url"
         }
     },
 
     "Resources": {
+        "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+            }
+        }
     },
     
     "Outputs": {
         "apiGatewayUrl": {
             "Value": "val-1"
-        },
-        "apiGatewayDomain": {
-            "Value": "val-2"
         }
     }
 }

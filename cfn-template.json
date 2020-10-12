@@ -2,14 +2,6 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Microtica Continuous Integration component",
     "Parameters": {
-        "stageId": {
-            "Description": "Stage ID",
-            "Type": "String"
-        },
-        "resourceId": {
-            "Type": "String",
-            "Description": "Unique ID of Microtica component"
-        }
     },
 
     "Resources": {

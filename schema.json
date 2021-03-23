@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "schema://microtica/component-spa.json",
+    "title": "Component Schema",
+    "type": "object",
+    "properties": {
+        "inputs": {
+            "type": "object",
+            "properties": {
+                "DomainName": {
+                    "type": "string",
+                    "default": "",
+                    "pattern": "(?!-)[a-zA-Z0-9-.]{1,63}(?<!-)",
+                    "description": "Domain name to be associated with this website."
+                },
+                "CertificateARN": {
+                    "type": "string",
+                    "default": "",
+                    "pattern": "^arn:aws:acm:([\\w-]+):(\\d{12}):certificate/([\\w-]{36})$",
+                    "description": "ARN of the custom certificate configure with this distribution. The certificate should cover the provided domain name."
+                },
+                "RestrictAccess": {
+                    "type": "string",
+                    "defailt": "false",
+                    "enum": [
+                        "true",
+                        "false"
+                    ],
+                    "description": "If set to 'true' the content will only be available with pre-signed URLs or cookies."
+                }
+            },
+            "required": []
+        }
+    },
+    "additionalProperties": false
+}

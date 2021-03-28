@@ -1,7 +1,7 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Transform": "AWS::Serverless-2016-10-31",
-    "Description": "Microtica SPA infrastructure (CDN + S3)",
+    "Description": "Microtica CDN infrastructure (CloudFront + S3)",
     "Parameters": {
         "DomainName": {
             "Type": "String",

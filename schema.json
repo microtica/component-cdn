@@ -19,7 +19,7 @@
                 },
                 "RestrictAccess": {
                     "type": "string",
-                    "defailt": "false",
+                    "default": "false",
                     "enum": [
                         "true",
                         "false"

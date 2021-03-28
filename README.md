@@ -1,6 +1,8 @@
-# SPA infrastructure component
+# CDN (Content Delivery Network) component
 
-Infrastructure setup for hosting Single Page Applications (SPA). 
+Infrastructure setup for hosting Single Page Applications (SPA) and any other kind of public or private static content (e.g. images, PDFs etc.)
+
+When private content restriction is enabled, you should use signed URLs or Cookies to access the private content. Request signing is only available within the same account where this component is provisioned.
 
 This components provisiones:
 - CloudFront distribution

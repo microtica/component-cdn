@@ -1,5 +1,5 @@
 {
-    "name": "@microtica/component-spa",
+    "name": "@microtica/component-cdn",
     "version": "0.0.1",
     "description": "Microtica Custom Component",
     "main": "execute.js",

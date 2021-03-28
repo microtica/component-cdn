@@ -211,6 +211,12 @@
                 "Ref": "WebsiteCloudfront"
             },
             "Description": "CloudFront distribution ID"
+        },
+        "StorageBucketName": {
+            "Value": {
+                "Ref": "WebsiteBucket"
+            },
+            "Description": "Name of the S3 bucket where the content is stored"
         }
     }
 }

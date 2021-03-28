@@ -206,6 +206,12 @@
             },
             "Description": "Website domain name"
         },
+        "CNAME": {
+            "Value": {
+                "Fn::GetAtt": "WebsiteCloudfront.DomainName"
+            },
+            "Description": "CloudFront distribution Domain"
+        },
         "CloudFrontID": {
             "Value": {
                 "Ref": "WebsiteCloudfront"

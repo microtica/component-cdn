@@ -20,6 +20,14 @@
                 "true",
                 "false"
             ]
+        },
+        "RetainContent": {
+            "Type": "String",
+            "Default": "true",
+            "AllowedValues": [
+                "true",
+                "false"
+            ]
         }
     },
     "Conditions": {
@@ -54,6 +62,14 @@
                 },
                 "true"
             ]
+        },
+        "EmptyWebsiteBucket": {
+            "Fn::Equals": [
+                {
+                    "Ref": "RetainContent"
+                },
+                "false"
+            ]
         }
     },
     "Resources": {
@@ -64,6 +80,15 @@
                 "WebsiteConfiguration": {
                     "IndexDocument": "index.html",
                     "ErrorDocument": "index.html"
+                },
+                "DeletionPolicy": {
+                    "Fn::If": [
+                        "EmptyWebsiteBucket",
+                        {
+                            "Ref": "AWS::NoValue"
+                        },
+                        "Retain"
+                    ]
                 }
             }
         },
@@ -180,6 +205,135 @@
                         ]
                     }
                 }
+            }
+        },
+        "WebsiteBucketCleaner": {
+            "Type": "AWS::Lambda::Function",
+            "Condition": "EmptyWebsiteBucket",
+            "Properties": {
+                "Code": {
+                    "ZipFile": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "const response = require('cfn-response');\n",
+                                "const { S3 } = require('aws-sdk');\n",
+                                "exports.handler = function (event, context) {\n",
+                                "    const bucket = event.ResourceProperties.s3Bucket;\n",
+                                "    if (event.RequestType === 'Delete') {\n",
+                                "        purgeOutputBucket(bucket).then(() => {\n",
+                                "            response.send(event, context, response.SUCCESS, {});\n",
+                                "        }).catch((err) => {\n",
+                                "            console.log('ERR', err);\n",
+                                "            response.send(event, context, response.FAILED, { err });\n",
+                                "        });\n",
+                                "    } else {\n",
+                                "        response.send(event, context, response.SUCCESS, {});\n",
+                                "    }\n",
+                                "};\n",
+                                "async function purgeOutputBucket(bucket) {\n",
+                                "    let objects = null;\n",
+                                "    try {\n",
+                                "        objects = await new S3().listObjects({\n",
+                                "            Bucket: bucket\n",
+                                "        }).promise();\n",
+                                "    } catch (e) {\n",
+                                "        if (e.code !== 'NoSuchBucket') {\n",
+                                "            throw e;\n",
+                                "        }\n",
+                                "    }\n",
+                                "    if (objects) {\n",
+                                "        if (objects.Contents.length === 0) {\n",
+                                "            return;\n",
+                                "        }\n",
+                                "        const keys = objects.Contents.map(c => ({ Key: c.Key }));\n",
+                                "        const deleteRequest = {\n",
+                                "            Bucket: bucket,\n",
+                                "            Delete: {\n",
+                                "                Objects: keys\n",
+                                "            }\n",
+                                "        };\n",
+                                "        await new S3().deleteObjects(deleteRequest).promise();\n",
+                                "        if (objects.IsTruncated) {\n",
+                                "            await purgeOutputBucket(bucket);\n",
+                                "        }\n",
+                                "    }\n",
+                                "}"
+                            ]
+                        ]
+                    }
+                },
+                "Role": {
+                    "Fn::GetAtt": [
+                        "WebsiteBucketCleanerRole",
+                        "Arn"
+                    ]
+                },
+                "Handler": "index.handler",
+                "Runtime": "nodejs10.x",
+                "Timeout": 30
+            }
+        },
+        "WebsiteBucketCleanerCustom": {
+            "Type": "AWS::CloudFormation::CustomResource",
+            "Condition": "EmptyWebsiteBucket",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "WebsiteBucketCleaner",
+                        "Arn"
+                    ]
+                },
+                "s3Bucket": {
+                    "Ref": "WebsiteBucket"
+                }
+            }
+        },
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "ExecutionPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "s3:DeleteObject",
+                                        "s3:ListBucket"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::Sub": "arn:aws:s3:::${WebsiteBucket}"
+                                        },
+                                        {
+                                            "Fn::Sub": "arn:aws:s3:::${WebsiteBucket}/*"
+                                        }
+                                    ],
+                                    "Effect": "Allow"
+                                }
+                            ]
+                        }
+                    }
+                ]
             }
         }
     },

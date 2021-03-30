@@ -10,7 +10,7 @@
                 "DomainName": {
                     "type": "string",
                     "default": " ",
-                    "description": "Domain name to be associated with this website."
+                    "description": "Domain name to be associated with this CDN."
                 },
                 "CertificateARN": {
                     "type": "string",
@@ -25,10 +25,20 @@
                         "false"
                     ],
                     "description": "If set to 'true' the content will only be available with pre-signed URLs or cookies."
+                },
+                "RetainContent": {
+                    "type": "string",
+                    "default": "true",
+                    "enum": [
+                        "true",
+                        "false"
+                    ],
+                    "description": "If enabled, the S3 bucket and the content stored in the bucket will be retained."
                 }
             },
             "required": [
-                "RestrictAccess"
+                "RestrictAccess",
+                "RetainContent"
             ]
         }
     },

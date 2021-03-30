@@ -2,20 +2,32 @@ const path = require("path");
 const { NestedComponent } = require("@microtica/component").AwsCloud;
 
 const component = new NestedComponent(
-    handleCreate,
-    handleUpdate
+    handleCreateOrUpdate,
+    handleCreateOrUpdate,
+    async () => { },
+    "/tmp/index.json",
 );
 
-async function handleCreate() {
-    // Here specify additional properties which will be provided as input parameters in CFN template during deployment.
-    // Properties specified here will be provided during initial resource deployment.
+async function handleCreateOrUpdate() {
+    const { RetainContent } = await component.getInputParameters();
+
+    transformTemplate(RetainContent === "true");
+
     return {};
 }
 
-async function handleUpdate() {
-    // Here specify additional properties which will be provided as input parameters in CFN template during deployment.
-    // Properties specified here will be provided during resource update deployment.
-    return {};
+async function transformTemplate(retainContent) {
+    const sourcePath = path.join(__dirname, "./index.json");
+    const destPath = "/tmp/index.json";
+
+    NestedComponent.transformTemplate(
+        sourcePath,
+        destPath,
+        template => {
+            template.Resources["WebsiteBucket"].Properties.DeletionPolicy = retainContent ? "Retain" : "Delete";
+            return template;
+        }
+    );
 }
 
 module.exports = component;

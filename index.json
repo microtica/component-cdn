@@ -81,15 +81,7 @@
                     "IndexDocument": "index.html",
                     "ErrorDocument": "index.html"
                 },
-                "DeletionPolicy": {
-                    "Fn::If": [
-                        "EmptyWebsiteBucket",
-                        {
-                            "Ref": "AWS::NoValue"
-                        },
-                        "Retain"
-                    ]
-                }
+                "DeletionPolicy": "Retain"
             }
         },
         "WebsiteBucketPolicy": {

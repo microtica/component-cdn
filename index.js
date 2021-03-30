@@ -4,8 +4,8 @@ const { NestedComponent } = require("@microtica/component").AwsCloud;
 const component = new NestedComponent(
     handleCreateOrUpdate,
     handleCreateOrUpdate,
-    // async () => { },
-    // "/tmp/index.json",
+    async () => { },
+    "/tmp/index.json",
 );
 
 async function handleCreateOrUpdate() {

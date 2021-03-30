@@ -291,6 +291,7 @@
         },
         "WebsiteBucketCleanerRole": {
             "Type": "AWS::IAM::Role",
+            "Condition": "EmptyWebsiteBucket",
             "Properties": {
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",

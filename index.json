@@ -75,13 +75,7 @@
     "Resources": {
         "WebsiteBucket": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": {
-                "Fn::If": [
-                    "EmptyWebsiteBucket",
-                    "Delete",
-                    "Retain"
-                ]
-            },
+            "DeletionPolicy": "Retain",
             "Properties": {
                 "AccessControl": "Private",
                 "WebsiteConfiguration": {

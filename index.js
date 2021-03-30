@@ -11,7 +11,7 @@ const component = new NestedComponent(
 async function handleCreateOrUpdate() {
     const { RetainContent } = await component.getInputParameters();
 
-    // transformTemplate(RetainContent === "true");
+    transformTemplate(RetainContent === "true");
 
     return {};
 }
@@ -24,7 +24,7 @@ async function transformTemplate(retainContent) {
         sourcePath,
         destPath,
         template => {
-            template.Resources["WebsiteBucket"].Properties.DeletionPolicy = retainContent ? "Retain" : "Delete";
+            template.Resources["WebsiteBucket"].DeletionPolicy = retainContent ? "Retain" : "Delete";
             return template;
         }
     );

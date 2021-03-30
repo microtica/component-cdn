@@ -289,7 +289,7 @@
                 }
             }
         },
-        "LambdaExecutionRole": {
+        "WebsiteBucketCleanerRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "AssumeRolePolicyDocument": {

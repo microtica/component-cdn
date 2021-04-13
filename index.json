@@ -216,7 +216,7 @@
                 "PublicKeyConfig": {
                     "CallerReference": "websitepublickey",
                     "EncodedKey": {
-                        "Ref": "PublicKey"
+                        "Ref": "EncodedKey"
                     },
                     "Name": {
                         "Ref": "KeyName"

@@ -34,7 +34,8 @@
             "NoEcho": true
         },
         "KeyName": {
-            "Type": "String"
+            "Type": "String",
+            "Default": ""
         }
     },
     "Conditions": {

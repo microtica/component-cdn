@@ -15,7 +15,7 @@ async function handleCreateOrUpdate() {
     transformTemplate(RetainContent === "true");
 
     let publicKey = "";
-    if (PublicKey.includes("arn:aws:secretsmanager")) {
+    if (PublicKey && PublicKey.includes("arn:aws:secretsmanager")) {
         const { SecretString } = await new SecretsManager().getSecretValue({
             SecretId: PublicKey
         }).promise();

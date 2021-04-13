@@ -30,8 +30,7 @@
             ]
         },
         "EncodedKey": {
-            "Type": "String",
-            "NoEcho": true
+            "Type": "String"
         },
         "KeyName": {
             "Type": "String",

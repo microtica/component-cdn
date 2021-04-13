@@ -14,11 +14,15 @@ async function handleCreateOrUpdate() {
 
     transformTemplate(RetainContent === "true");
 
+    console.log("PublicKey", PublicKey)
+
     let publicKey = "";
     if (PublicKey && PublicKey.includes("arn:aws:secretsmanager")) {
         const { SecretString } = await new SecretsManager().getSecretValue({
             SecretId: PublicKey
         }).promise();
+
+        console.log("SecretString", SecretString)
 
         const secret = JSON.parse(SecretString);
 

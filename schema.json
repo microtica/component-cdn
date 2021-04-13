@@ -34,6 +34,9 @@
                         "false"
                     ],
                     "description": "If enabled, the S3 bucket and the content stored in the bucket will be retained."
+                },
+                "PublicKey": {
+                    "type": "string"
                 }
             },
             "required": [

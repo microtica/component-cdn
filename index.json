@@ -28,6 +28,13 @@
                 "true",
                 "false"
             ]
+        },
+        "EncodedKey": {
+            "Type": "String",
+            "NoEcho": true
+        },
+        "KeyName": {
+            "Type": "String"
         }
     },
     "Conditions": {
@@ -169,11 +176,13 @@
                             }
                         },
                         "ViewerProtocolPolicy": "redirect-to-https",
-                        "TrustedSigners": {
+                        "TrustedKeyGroups": {
                             "Fn::If": [
                                 "ShouldRestrictAccess",
                                 [
-                                    "self"
+                                    {
+                                        "Ref": "WebsiteKeyGroup"
+                                    }
                                 ],
                                 {
                                     "Ref": "AWS::NoValue"
@@ -195,6 +204,37 @@
                                 "Ref": "AWS::NoValue"
                             }
                         ]
+                    }
+                }
+            }
+        },
+        "WebsitePublicKey": {
+            "Type": "AWS::CloudFront::PublicKey",
+            "Condition": "ShouldRestrictAccess",
+            "Properties": {
+                "PublicKeyConfig": {
+                    "CallerReference": "websitepublickey",
+                    "EncodedKey": {
+                        "Ref": "PublicKey"
+                    },
+                    "Name": {
+                        "Ref": "KeyName"
+                    }
+                }
+            }
+        },
+        "WebsiteKeyGroup": {
+            "Type": "AWS::CloudFront::KeyGroup",
+            "Condition": "ShouldRestrictAccess",
+            "Properties": {
+                "KeyGroupConfig": {
+                    "Items": [
+                        {
+                            "Ref": "WebsitePublicKey"
+                        }
+                    ],
+                    "Name": {
+                        "Ref": "KeyName"
                     }
                 }
             }

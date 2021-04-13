@@ -1,4 +1,5 @@
 const path = require("path");
+const { SecretsManager } = require("aws-sdk");
 const { NestedComponent } = require("@microtica/component").AwsCloud;
 
 const component = new NestedComponent(
@@ -9,11 +10,27 @@ const component = new NestedComponent(
 );
 
 async function handleCreateOrUpdate() {
-    const { RetainContent } = await component.getInputParameters();
+    const { RetainContent, PublicKey, MIC_ENVIRONMENT_ID } = await component.getInputParameters();
 
     transformTemplate(RetainContent === "true");
 
-    return {};
+    let publicKey = "";
+    if (PublicKey.includes("arn:aws:secretsmanager")) {
+        const { SecretString } = await new SecretsManager().getSecretValue({
+            SecretId: PublicKey
+        }).promise();
+
+        const secret = JSON.parse(SecretString);
+
+        publicKey = secret.publicKey;
+    } else {
+        publicKey = PublicKey;
+    }
+
+    return {
+        EncodedKey: publicKey,
+        KeyName: MIC_ENVIRONMENT_ID
+    };
 }
 
 async function transformTemplate(retainContent) {

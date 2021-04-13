@@ -12,8 +12,6 @@ const component = new NestedComponent(
 async function handleCreateOrUpdate() {
     const { RetainContent, PublicKey, MIC_ENVIRONMENT_ID } = await component.getInputParameters();
 
-    transformTemplate(RetainContent === "true");
-
     let publicKey = "";
     if (PublicKey && PublicKey.includes("arn:aws:secretsmanager")) {
         const { SecretString } = await new SecretsManager().getSecretValue({
@@ -29,13 +27,15 @@ async function handleCreateOrUpdate() {
         publicKey = PublicKey;
     }
 
+    transformTemplate(RetainContent === "true", publicKey);
+
     return {
         EncodedKey: publicKey,
         KeyName: MIC_ENVIRONMENT_ID
     };
 }
 
-async function transformTemplate(retainContent) {
+async function transformTemplate(retainContent, encodedKey) {
     const sourcePath = path.join(__dirname, "./index.json");
     const destPath = "/tmp/index.json";
 
@@ -44,6 +44,7 @@ async function transformTemplate(retainContent) {
         destPath,
         template => {
             template.Resources["WebsiteBucket"].DeletionPolicy = retainContent ? "Retain" : "Delete";
+            template.Resources["WebsitePublicKey"].Properties.PublicKeyConfig.EncodedKey = encodedKey;
             return template;
         }
     );

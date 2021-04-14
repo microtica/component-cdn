@@ -29,12 +29,15 @@
                 "false"
             ]
         },
-        "EncodedKey": {
-            "Type": "String"
-        },
         "KeyName": {
             "Type": "String",
             "Default": ""
+        },
+        "CloudfrontKeyLambdaBucket": {
+            "Type": "String"
+        },
+        "CloudfrontKeyLambdaBucketKey": {
+            "Type": "String"
         }
     },
     "Conditions": {
@@ -215,7 +218,7 @@
                 "PublicKeyConfig": {
                     "CallerReference": "websitepublickey",
                     "EncodedKey": {
-                        "Ref": "EncodedKey"
+                        "Fn::GetAtt": "CloudfrontKeyCustom.publicKey"
                     },
                     "Name": {
                         "Ref": "KeyName"
@@ -367,6 +370,38 @@
                         }
                     }
                 ]
+            }
+        },
+        "CloudfrontKeyLambda": {
+            "Type": "AWS::Serverless::Function",
+            "Condition": "ShouldRestrictAccess",
+            "Properties": {
+                "Handler": "dst/index.handler",
+                "Runtime": "nodejs12.x",
+                "Timeout": 30,
+                "CodeUri": {
+                    "Bucket": {
+                        "Ref": "CloudfrontKeyLambdaBucket"
+                    },
+                    "Key": {
+                        "Ref": "CloudfrontKeyLambdaBucketKey"
+                    }
+                },
+                "Policies": [
+                    "AWSLambdaVPCAccessExecutionRole"
+                ]
+            }
+        },
+        "CloudfrontKeyCustom": {
+            "Type": "AWS::CloudFormation::CustomResource",
+            "Condition": "ShouldRestrictAccess",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "CloudfrontKeyLambda",
+                        "Arn"
+                    ]
+                }
             }
         }
     },

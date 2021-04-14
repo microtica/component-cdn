@@ -1,5 +1,4 @@
 const path = require("path");
-const { SecretsManager } = require("aws-sdk");
 const { NestedComponent } = require("@microtica/component").AwsCloud;
 
 const component = new NestedComponent(
@@ -10,32 +9,20 @@ const component = new NestedComponent(
 );
 
 async function handleCreateOrUpdate() {
-    const { RetainContent, PublicKey, MIC_ENVIRONMENT_ID } = await component.getInputParameters();
+    const { RetainContent, MIC_ENVIRONMENT_ID } = await component.getInputParameters();
 
-    let publicKey = "";
-    if (PublicKey && PublicKey.includes("arn:aws:secretsmanager")) {
-        const { SecretString } = await new SecretsManager().getSecretValue({
-            SecretId: PublicKey
-        }).promise();
+    transformTemplate(RetainContent === "true");
 
-        console.log("parsing secret string", SecretString);
-        const secret = JSON.parse(SecretString);
-        console.log("secret", secret);
-
-        publicKey = secret.publicKey;
-    } else {
-        publicKey = PublicKey;
-    }
-
-    transformTemplate(RetainContent === "true", publicKey);
+    const [lambdaPackage] = await uploadPackages();
 
     return {
-        EncodedKey: publicKey,
-        KeyName: MIC_ENVIRONMENT_ID
+        KeyName: MIC_ENVIRONMENT_ID,
+        CloudfrontKeyLambdaBucket: lambdaPackage.s3Bucket,
+        CloudfrontKeyLambdaBucketKey: lambdaPackage.s3Key,
     };
 }
 
-async function transformTemplate(retainContent, encodedKey) {
+async function transformTemplate(retainContent) {
     const sourcePath = path.join(__dirname, "./index.json");
     const destPath = "/tmp/index.json";
 
@@ -44,10 +31,20 @@ async function transformTemplate(retainContent, encodedKey) {
         destPath,
         template => {
             template.Resources["WebsiteBucket"].DeletionPolicy = retainContent ? "Retain" : "Delete";
-            template.Resources["WebsitePublicKey"].Properties.PublicKeyConfig.EncodedKey = encodedKey;
             return template;
         }
     );
+}
+
+/**
+ * Upload Lambda packages
+ *
+ * @return {*} 
+ */
+async function uploadPackages() {
+    return Promise.all([
+        component.uploadComponentPackage(path.join(__dirname, "functions/cloudfront-key/package.zip"))
+    ]);
 }
 
 module.exports = component;

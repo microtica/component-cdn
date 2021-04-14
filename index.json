@@ -422,7 +422,7 @@
                             "\"publicKey\":",
                             "\"",
                             {
-                                "Fn::GetAtt": "CloudfrontKeyCustom.pubicKey"
+                                "Fn::GetAtt": "CloudfrontKeyCustom.publicKey"
                             },
                             "\",",
                             "\"keyId\":",

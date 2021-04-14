@@ -9,22 +9,22 @@ export async function handler(event: CloudFormationCustomResourceEvent, context:
     // tslint:disable-next-line
     console.log("EVENT", JSON.stringify(event));
 
-
     try {
         startTransaction(event, context);
 
-        const { privateKey, publicKey } = pki.rsa.generateKeyPair(KEY_BITS);
+        if (event.RequestType === "Create") {
+            const { privateKey, publicKey } = pki.rsa.generateKeyPair(KEY_BITS);
 
-        const privatePem = pki.privateKeyToPem(privateKey);
-        const publicPem = pki.publicKeyToPem(publicKey);
+            const privatePem = pki.privateKeyToPem(privateKey);
+            const publicPem = pki.publicKeyToPem(publicKey);
 
-        console.log("privatePem", privatePem);
-        console.log("publicPem", publicPem);
-
-        await commitStatus(event, "SUCCESS", {
-            privateKey: privatePem,
-            publicKey: publicPem
-        }, "RSA keys successfully created");
+            await commitStatus(event, "SUCCESS", {
+                privateKey: privatePem,
+                publicKey: publicPem
+            }, "RSA keys successfully created");
+        } else {
+            await commitStatus(event, "SUCCESS", {}, "RSA keys successfully created");
+        }
     } catch (error) {
         console.error(error);
         // tslint:disable-next-line:no-console

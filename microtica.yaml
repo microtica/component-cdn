@@ -11,6 +11,7 @@ steps:
       - npm run build
       - npm test
       - npm prune --production
+      - cd functions/cloudfront-key && npm run package
     artifacts:
       files:
         package_zip: ./

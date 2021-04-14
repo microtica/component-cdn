@@ -403,6 +403,40 @@
                     ]
                 }
             }
+        },
+        "KeysSecret": {
+            "Type": "AWS::SecretsManager::Secret",
+            "Condition": "ShouldRestrictAccess",
+            "Properties": {
+                "SecretString": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "{",
+                            "\"privateKey\":",
+                            "\"",
+                            {
+                                "Fn::GetAtt": "CloudfrontKeyCustom.privateKey"
+                            },
+                            "\",",
+                            "\"publicKey\":",
+                            "\"",
+                            {
+                                "Fn::GetAtt": "CloudfrontKeyCustom.pubicKey"
+                            },
+                            "\",",
+                            "\"keyId\":",
+                            "\"",
+                            {
+                                "Ref": "WebsitePublicKey"
+                            },
+                            "\"",
+                            "}"
+                        ]
+                    ],
+                    "Fn::Sub": "{\"privateKey\": \"${PrivateKey}\",\"publicKey\": \"${PublicKey}\"}"
+                }
+            }
         }
     },
     "Outputs": {
@@ -445,6 +479,30 @@
                 "Ref": "WebsiteBucket"
             },
             "Description": "Name of the S3 bucket where the content is stored"
+        },
+        "PublicKeyId": {
+            "Value": {
+                "Fn::If": [
+                    "ShouldRestrictAccess",
+                    {
+                        "Ref": "WebsitePublicKey"
+                    },
+                    ""
+                ]
+            },
+            "Description": "CloudFront public key used for signing URLs/Cookies. Available if restricted access is enabled"
+        },
+        "KeysSecret": {
+            "Value": {
+                "Fn::If": [
+                    "ShouldRestrictAccess",
+                    {
+                        "Ref": "KeysSecret"
+                    },
+                    ""
+                ]
+            },
+            "Description": "Secret Manager ARN where the public/private keys and CloudFront public key are stored"
         }
     }
 }

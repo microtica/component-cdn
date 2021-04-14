@@ -433,8 +433,7 @@
                             "\"",
                             "}"
                         ]
-                    ],
-                    "Fn::Sub": "{\"privateKey\": \"${PrivateKey}\",\"publicKey\": \"${PublicKey}\"}"
+                    ]
                 }
             }
         }

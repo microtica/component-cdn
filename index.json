@@ -91,6 +91,15 @@
                 "WebsiteConfiguration": {
                     "IndexDocument": "index.html",
                     "ErrorDocument": "index.html"
+                },
+                "BucketEncryption": {
+                    "ServerSideEncryptionConfiguration": [
+                        {
+                            "ServerSideEncryptionByDefault": {
+                                "SSEAlgorithm": "AES256"
+                            }
+                        }
+                    ]
                 }
             }
         },

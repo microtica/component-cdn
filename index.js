@@ -1,4 +1,5 @@
 const path = require("path");
+const random = require("randomstring");
 const { NestedComponent } = require("@microtica/component").AwsCloud;
 
 const component = new NestedComponent(
@@ -9,14 +10,16 @@ const component = new NestedComponent(
 );
 
 async function handleCreateOrUpdate() {
-    const { RetainContent, MIC_ENVIRONMENT_ID } = await component.getInputParameters();
+    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID } = await component.getInputParameters();
 
     transformTemplate(RetainContent === "true");
 
     const [lambdaPackage] = await uploadPackages();
 
+    const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}}`;
+
     return {
-        KeyName: MIC_ENVIRONMENT_ID,
+        KeyName: keyName,
         CloudfrontKeyLambdaBucket: lambdaPackage.s3Bucket,
         CloudfrontKeyLambdaBucketKey: lambdaPackage.s3Key,
     };

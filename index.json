@@ -225,7 +225,7 @@
             "Condition": "ShouldRestrictAccess",
             "Properties": {
                 "PublicKeyConfig": {
-                    "CallerReference": "websitepublickey",
+                    "CallerReference": {"Ref": "KeyName"},
                     "EncodedKey": {
                         "Fn::GetAtt": "CloudfrontKeyCustom.publicKey"
                     },

@@ -16,7 +16,7 @@ async function handleCreateOrUpdate() {
 
     const [lambdaPackage] = await uploadPackages();
 
-    const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}}`;
+    const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
 
     return {
         KeyName: keyName,

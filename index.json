@@ -254,6 +254,10 @@
                         ]
                     ]
                 },
+                "FunctionConfig": {
+                    "Comment": "This function adds security headers",
+                    "Runtime": "cloudfront-js-1.0"
+                },
                 "Name": {
                     "Ref": "KeyName"
                 }

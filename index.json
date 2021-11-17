@@ -359,7 +359,7 @@
                     ]
                 },
                 "Handler": "index.handler",
-                "Runtime": "nodejs11.x",
+                "Runtime": "nodejs12.x",
                 "Timeout": 30
             }
         },

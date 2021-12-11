@@ -55,6 +55,8 @@ async function createOriginRequestFunction(name) {
     const iam = new IAM();
     const lambda = new Lambda({ region: "us-east-1" });
 
+    console.log("Creating Origin Request Lambda...");
+
     const { Policy: policy } = await iam.createPolicy({
         PolicyName: name,
         PolicyDocument: JSON.stringify({
@@ -70,6 +72,8 @@ async function createOriginRequestFunction(name) {
             ]
         })
     }).promise();
+
+    console.log("Created Lambda policy");
 
     const { Role: role } = await iam.createRole({
         RoleName: name,
@@ -91,6 +95,8 @@ async function createOriginRequestFunction(name) {
             ]
         })
     }).promise();
+
+    console.log("Created Lambda role");
 
     await Promise.all([
         iam.attachRolePolicy({
@@ -116,9 +122,13 @@ async function createOriginRequestFunction(name) {
         Role: role.Arn
     }).promise();
 
+    console.log("Created Lambda function");
+
     await timeout(10000);
 
     const { FunctionArn: arn } = await lambda.publishVersion({ FunctionName: name }).promise();
+
+    console.log("Published new Lambda version");
 
     return arn;
 }

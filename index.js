@@ -185,13 +185,4 @@ async function uploadPackages() {
     ]);
 }
 
-(async () => {
-    console.log("creating lambda edge");
-    const arn = await createOriginRequestFunction("testing-lambda-edge");
-    console.log("updating lambda edge");
-    await updateOriginRequestFunction("testing-lambda-edge");
-    console.log("deleting lambda edge");
-    await deleteOriginRequestFunction("testing-lambda-edge");
-})()
-
 module.exports = component;

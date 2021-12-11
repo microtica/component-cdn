@@ -6,9 +6,6 @@ const MS_BEFORE_TIMEOUT = 2000;
 const KEY_BITS = 2048;
 
 export async function handler(event: CloudFormationCustomResourceEvent, context: Context) {
-    // tslint:disable-next-line
-    console.log("EVENT", JSON.stringify(event));
-
     try {
         startTransaction(event, context);
 
@@ -47,7 +44,6 @@ function commitStatus(event: CloudFormationCustomResourceEvent, status: string, 
         LogicalResourceId: event.LogicalResourceId,
         Data: data
     });
-    console.log("RESPONSE BODY:\n", responseBody);
 
     return new Promise((resolve, reject) => {
         // const parsedUrl = url.parse(event.ResponseURL);

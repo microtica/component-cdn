@@ -38,6 +38,15 @@
         },
         "CloudfrontKeyLambdaBucketKey": {
             "Type": "String"
+        },
+        "ImageConverterLambdaBucket": {
+            "Type": "String"
+        },
+        "ImageConverterLambdaBucketKey": {
+            "Type": "String"
+        },
+        "OriginRequestLambdaArn": {
+            "Type": "String"
         }
     },
     "Conditions": {
@@ -208,6 +217,14 @@
                                     "Fn::GetAtt": "WebsiteSecurityHeadersFunction.FunctionARN"
                                 }
                             }
+                        ],
+                        "LambdaFunctionAssociations": [
+                            {
+                                "EventType": "origin-request",
+                                "LambdaFunctionARN": {
+                                    "Ref": "OriginRequestLambdaArn"
+                                }
+                            }
                         ]
                     },
                     "PriceClass": "PriceClass_All",
@@ -358,7 +375,7 @@
                     ]
                 },
                 "Handler": "index.handler",
-                "Runtime": "nodejs12.x",
+                "Runtime": "nodejs14.x",
                 "Timeout": 30
             }
         },
@@ -430,7 +447,7 @@
             "Condition": "ShouldRestrictAccess",
             "Properties": {
                 "Handler": "dst/index.handler",
-                "Runtime": "nodejs12.x",
+                "Runtime": "nodejs14.x",
                 "Timeout": 30,
                 "CodeUri": {
                     "Bucket": {

@@ -12,6 +12,7 @@
     "license": "ISC",
     "dependencies": {
         "@microtica/component": "^3.3.0",
+        "concat-stream": "^2.0.0",
         "randomstring": "^1.2.1"
     },
     "devDependencies": {

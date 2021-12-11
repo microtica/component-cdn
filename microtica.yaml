@@ -12,6 +12,7 @@ steps:
       - npm test
       - npm prune --production
       - cd functions/cloudfront-key && npm run package
+      - cd ../image-converter && npm run package
     artifacts:
       files:
         package_zip: ./

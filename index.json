@@ -39,12 +39,6 @@
         "CloudfrontKeyLambdaBucketKey": {
             "Type": "String"
         },
-        "ImageConverterLambdaBucket": {
-            "Type": "String"
-        },
-        "ImageConverterLambdaBucketKey": {
-            "Type": "String"
-        },
         "OriginRequestLambdaArn": {
             "Type": "String"
         }

@@ -166,8 +166,11 @@ async function deleteOriginRequestFunction(name) {
     const policyArn = `arn:aws:iam::${accountId}:policy/${name}`;
 
     await lambda.deleteFunction({ FunctionName: name }).promise();
+    console.log("Deleted Lambda function");
     await iam.deleteRole({ RoleName: name }).promise();
+    console.log("Deleted Lambda role");
     await iam.deletePolicy({ PolicyArn: policyArn }).promise();
+    console.log("Deleted Lambda policy");
 }
 
 async function transformTemplate(retainContent) {

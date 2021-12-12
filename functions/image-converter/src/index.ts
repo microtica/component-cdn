@@ -48,16 +48,22 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
         }
     }
 
-    await sharp(tmpPath)
-        .resize({
-            width,
-            height,
-            fit: sharp.fit.cover
-        })
-        .toFile(targetPath);
+    try {
+        await sharp(tmpPath)
+            .resize({
+                width,
+                height,
+                fit: sharp.fit.cover
+            })
+            .toFile(targetPath);
+    } catch (err) {
+        return {
+            status: "400",
+            statusDescription: "Error converting the image. Please check if the requested file is actually a valid image."
+        };
+    }
 
     const image = fs.readFileSync(targetPath).toString("base64");
-
     return {
         bodyEncoding: "base64",
         body: image,

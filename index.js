@@ -11,10 +11,6 @@ const component = new NestedComponent(
     "/tmp/index.json",
 );
 
-const {
-    AWS_REGION
-} = process.env;
-
 async function handleCreateOrUpdate(action) {
     const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID } = await component.getInputParameters();
 
@@ -122,15 +118,14 @@ async function createOriginRequestFunction(name) {
     }).promise();
 
     await lambda.addPermission({
+        StatementId: "LambdaReplicatorAccess",
         FunctionName: name,
-        Effect: "Allow",
         Principal: "replicator.lambda.amazonaws.com",
-        Action: "lambda:GetFunction"
+        Action: "lambda:GetFunction",
     }).promise();
-
     console.log("Created Lambda function");
 
-    await timeout(10000);
+    await lambda.waitFor("functionActive", { FunctionName: name }).promise();
 
     const { FunctionArn: arn } = await lambda.publishVersion({ FunctionName: name }).promise();
 
@@ -146,7 +141,7 @@ async function updateOriginRequestFunction(name) {
         ZipFile: await getOriginRequestLambdaPackage()
     }).promise();
 
-    await timeout(10000);
+    await lambda.waitFor("functionUpdated", { FunctionName: name }).promise();
 
     const { FunctionArn: arn } = await lambda.publishVersion({ FunctionName: name }).promise();
 
@@ -206,13 +201,13 @@ async function uploadPackages() {
     ]);
 }
 
-(async () => {
-    console.log("creating lambda edge");
-    const arn = await createOriginRequestFunction("testing-lambda-edge");
-    console.log("updating lambda edge");
-    await updateOriginRequestFunction("testing-lambda-edge");
-    console.log("deleting lambda edge");
-    await deleteOriginRequestFunction("testing-lambda-edge");
-})()
+// (async () => {
+//     console.log("creating lambda edge");
+//     const arn = await createOriginRequestFunction("testing-lambda-edge");
+//     console.log("updating lambda edge");
+//     await updateOriginRequestFunction("testing-lambda-edge");
+//     console.log("deleting lambda edge");
+//     await deleteOriginRequestFunction("testing-lambda-edge");
+// })()
 
 module.exports = component;

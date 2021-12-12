@@ -185,7 +185,12 @@
                         "Compress": true,
                         "TargetOriginId": "S3Origin",
                         "ForwardedValues": {
-                            "QueryString": false,
+                            "QueryString": true,
+                            "QueryStringCacheKeys": [
+                                "width",
+                                "height",
+                                "convert"
+                            ],
                             "Cookies": {
                                 "Forward": "none"
                             }

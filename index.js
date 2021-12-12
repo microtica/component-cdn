@@ -125,7 +125,7 @@ async function createOriginRequestFunction(name) {
         FunctionName: name,
         Effect: "Allow",
         Principal: "replicator.lambda.amazonaws.com",
-        Action: "lambda:GetFunction" 
+        Action: "lambda:GetFunction"
     }).promise();
 
     console.log("Created Lambda function");
@@ -146,7 +146,7 @@ async function updateOriginRequestFunction(name) {
         ZipFile: await getOriginRequestLambdaPackage()
     }).promise();
 
-    const { FunctionArn: arn } = lambda.publishVersion({ FunctionName: name }).promise();
+    const { FunctionArn: arn } = await lambda.publishVersion({ FunctionName: name }).promise();
 
     return arn;
 }

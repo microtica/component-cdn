@@ -4,13 +4,6 @@ import fs from "fs";
 import querystring from "querystring";
 import sharp from "sharp";
 
-// interface Headers {
-//     [key: string]: {
-//         key: string;
-//         value?: string | string[]
-//     }[];
-// }
-
 exports.handler = async (event: CloudFrontRequestEvent, context: Context, callback: Callback) => {
     console.log(JSON.stringify(event));
     const request = event.Records[0].cf.request;
@@ -37,13 +30,23 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
     }
 
     // dowload the file from the origin server
-    const [bucketName] = origin!.domainName.split(".");
-    const { Body: fileContent, ContentType: contentType } = await new S3().getObject({
-        Bucket: bucketName!,
-        Key: `${origin!.path}${request.uri}`.substring(1)
-    }).promise();
-
-    fs.writeFileSync(tmpPath, fileContent as string);
+    let contentType;
+    try {
+        const [bucketName] = origin!.domainName.split(".");
+        const { Body: fileContent, ContentType } = await new S3().getObject({
+            Bucket: bucketName!,
+            Key: `${origin!.path}${request.uri}`.substring(1)
+        }).promise();
+        fs.writeFileSync(tmpPath, fileContent as string);
+        contentType = ContentType;
+    } catch (err) {
+        if (err.statusCode === 404) {
+            return {
+                status: "404",
+                statusDescription: "Requested file does not exist."
+            };
+        }
+    }
 
     await sharp(tmpPath)
         .resize({

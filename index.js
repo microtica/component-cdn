@@ -146,6 +146,8 @@ async function updateOriginRequestFunction(name) {
         ZipFile: await getOriginRequestLambdaPackage()
     }).promise();
 
+    await timeout(10000);
+
     const { FunctionArn: arn } = await lambda.publishVersion({ FunctionName: name }).promise();
 
     return arn;

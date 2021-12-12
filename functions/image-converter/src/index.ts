@@ -23,12 +23,16 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
     const width = Math.min(parseInt(options.width as string) || maxSize, maxSize);
     const height = Math.min(parseInt(options.height as string) || maxSize, maxSize);
 
+    // If convert option is disabled serve the content from the origin directly
+    if (!options.convert || options.convert === "false") {
+        return request;
+    }
+
     // make sure input values are numbers
     if (Number.isNaN(width) || Number.isNaN(height)) {
-        console.log("Invalid input");
         return {
             status: "400",
-            statusDescription: "Invalid input"
+            statusDescription: "Invalid input for width and height."
         };
     }
 
@@ -47,8 +51,6 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
 
     const image = fs.readFileSync(targetPath).toString("base64");
 
-    console.log("image", image);
-
     return {
         bodyEncoding: "base64",
         body: image,
@@ -56,53 +58,4 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
         status: "200",
         statusDescription: "OK"
     };
-    // const writeStream = fs.createWriteStream(tmpPath);
-    // res
-    //     .on("error", _ => {
-    //         callback(null, {
-    //             status: "500",
-    //             statusDescription: "Error downloading the image"
-    //         });
-    //     })
-    //     .pipe(writeStream);
-
-    // writeStream
-    //     .on("finish", () => {
-    //         console.log("image downloaded");
-
-    //         try {
-    //             // invoke ImageMagick to resize the image
-    //             sharp(tmpPath)
-    //                 .resize(width, height)
-    //                 .toFile(targetPath)
-    //             // child.execSync(
-    //             //     `convert ${tmpPath} -resize ${width}x${height}\\> -quality 80 ${targetPath}`
-    //             // );
-    //         } catch (e) {
-    //             console.log("ImageMagick error");
-    //             console.log(e.stderr.toString());
-    //             callback(null, {
-    //                 status: "500",
-    //                 statusDescription: "Error resizing image"
-    //             });
-    //             return;
-    //         }
-
-    //         const image = fs.readFileSync(targetPath).toString("base64");
-
-    //         callback(null, {
-    //             bodyEncoding: "base64",
-    //             body: image,
-    //             // headers: originHeaders,
-    //             status: "200",
-    //             statusDescription: "OK"
-    //         });
-    //     })
-    //     .on("error", e => {
-    //         console.log(e);
-    //         callback(null, {
-    //             status: "500",
-    //             statusDescription: "Error writing the image to a file"
-    //         });
-    //     });
 };

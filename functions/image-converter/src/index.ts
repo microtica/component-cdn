@@ -38,7 +38,7 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
 
     // dowload the file from the origin server
     const [bucketName] = origin!.domainName.split(".");
-    const { Body: fileContent } = await new S3().getObject({
+    const { Body: fileContent, ContentType: contentType } = await new S3().getObject({
         Bucket: bucketName!,
         Key: `${origin!.path}${request.uri}`.substring(1)
     }).promise();
@@ -54,7 +54,12 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
     return {
         bodyEncoding: "base64",
         body: image,
-        // headers: originHeaders,
+        headers: {
+            "content-type": [{
+                key: "Content-Type",
+                value: contentType
+            }]
+        },
         status: "200",
         statusDescription: "OK"
     };

@@ -40,7 +40,9 @@
     },
     "author": "Microtica",
     "license": "ISC",
-    "dependencies": {},
+    "dependencies": {
+        "sharp": "^0.29.3"
+    },
     "devDependencies": {
         "@microtica/tslint-config": "^1.1.1",
         "@types/aws-lambda": "^8.10.73",

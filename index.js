@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const random = require("randomstring");
 const { NestedComponent } = require("@microtica/component").AwsCloud;
 const { Lambda, IAM, STS } = require("aws-sdk");
 const concat = require("concat-stream");
@@ -122,6 +121,13 @@ async function createOriginRequestFunction(name) {
         Role: role.Arn
     }).promise();
 
+    await lambda.addPermission({
+        FunctionName: name,
+        Effect: "Allow",
+        Principal: "replicator.lambda.amazonaws.com",
+        Action: "lambda:GetFunction" 
+    }).promise();
+
     console.log("Created Lambda function");
 
     await timeout(10000);
@@ -197,5 +203,14 @@ async function uploadPackages() {
         component.uploadComponentPackage(path.join(__dirname, "functions/cloudfront-key/package.zip"))
     ]);
 }
+
+(async () => {
+    console.log("creating lambda edge");
+    const arn = await createOriginRequestFunction("testing-lambda-edge");
+    console.log("updating lambda edge");
+    await updateOriginRequestFunction("testing-lambda-edge");
+    console.log("deleting lambda edge");
+    await deleteOriginRequestFunction("testing-lambda-edge");
+})()
 
 module.exports = component;

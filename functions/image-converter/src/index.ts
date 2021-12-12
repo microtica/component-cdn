@@ -1,9 +1,8 @@
 import { Callback, CloudFrontRequestEvent, Context } from "aws-lambda";
 import { S3 } from "aws-sdk";
-import child from "child_process";
 import fs from "fs";
 import querystring from "querystring";
-
+import sharp from "sharp";
 
 // interface Headers {
 //     [key: string]: {
@@ -12,14 +11,10 @@ import querystring from "querystring";
 //     }[];
 // }
 
-const {
-    bucketName
-} = process.env;
-
-exports.handler = (event: CloudFrontRequestEvent, context: Context, callback: Callback) => {
+exports.handler = async (event: CloudFrontRequestEvent, context: Context, callback: Callback) => {
     console.log(JSON.stringify(event));
     const request = event.Records[0].cf.request;
-    const origin = request.origin!.custom;
+    const origin = request.origin!.s3;
     const tmpPath = "/tmp/sourceImage";
     const targetPath = "/tmp/targetImage";
 
@@ -31,63 +26,83 @@ exports.handler = (event: CloudFrontRequestEvent, context: Context, callback: Ca
     // make sure input values are numbers
     if (Number.isNaN(width) || Number.isNaN(height)) {
         console.log("Invalid input");
-        callback(null, {
+        return {
             status: "400",
             statusDescription: "Invalid input"
-        });
-        return;
+        };
     }
 
     // dowload the file from the origin server
-    const res = new S3().getObject({
+    const [bucketName] = origin!.domainName.split(".");
+    const { Body: fileContent } = await new S3().getObject({
         Bucket: bucketName!,
         Key: `${origin!.path}${request.uri}`
-    }).createReadStream();
+    }).promise();
 
-    const writeStream = fs.createWriteStream(tmpPath);
-    res
-        .on("error", _ => {
-            callback(null, {
-                status: "500",
-                statusDescription: "Error downloading the image"
-            });
-        })
-        .pipe(writeStream);
+    fs.writeFileSync(tmpPath, fileContent as string);
 
-    writeStream
-        .on("finish", () => {
-            console.log("image downloaded");
+    await sharp(tmpPath)
+        .resize(width, height)
+        .toFile(targetPath);
 
-            try {
-                // invoke ImageMagick to resize the image
-                child.execSync(
-                    `convert ${tmpPath} -resize ${width}x${height}\\> -quality 80 ${targetPath}`
-                );
-            } catch (e) {
-                console.log("ImageMagick error");
-                console.log(e.stderr.toString());
-                callback(null, {
-                    status: "500",
-                    statusDescription: "Error resizing image"
-                });
-                return;
-            }
+    const image = fs.readFileSync(targetPath).toString("base64");
 
-            const image = fs.readFileSync(targetPath).toString("base64");
+    console.log("image", image);
 
-            callback(null, {
-                bodyEncoding: "base64",
-                body: image,
-                // headers: originHeaders,
-                status: "200",
-                statusDescription: "OK"
-            });
-        })
-        .on("error", e => {
-            console.log(e);
-            callback(null, {
-                status: "500",
-                statusDescription: "Error writing the image to a file"
-            });
-        });
+    return {
+        bodyEncoding: "base64",
+        body: image,
+        // headers: originHeaders,
+        status: "200",
+        statusDescription: "OK"
+    };
+    // const writeStream = fs.createWriteStream(tmpPath);
+    // res
+    //     .on("error", _ => {
+    //         callback(null, {
+    //             status: "500",
+    //             statusDescription: "Error downloading the image"
+    //         });
+    //     })
+    //     .pipe(writeStream);
+
+    // writeStream
+    //     .on("finish", () => {
+    //         console.log("image downloaded");
+
+    //         try {
+    //             // invoke ImageMagick to resize the image
+    //             sharp(tmpPath)
+    //                 .resize(width, height)
+    //                 .toFile(targetPath)
+    //             // child.execSync(
+    //             //     `convert ${tmpPath} -resize ${width}x${height}\\> -quality 80 ${targetPath}`
+    //             // );
+    //         } catch (e) {
+    //             console.log("ImageMagick error");
+    //             console.log(e.stderr.toString());
+    //             callback(null, {
+    //                 status: "500",
+    //                 statusDescription: "Error resizing image"
+    //             });
+    //             return;
+    //         }
+
+    //         const image = fs.readFileSync(targetPath).toString("base64");
+
+    //         callback(null, {
+    //             bodyEncoding: "base64",
+    //             body: image,
+    //             // headers: originHeaders,
+    //             status: "200",
+    //             statusDescription: "OK"
+    //         });
+    //     })
+    //     .on("error", e => {
+    //         console.log(e);
+    //         callback(null, {
+    //             status: "500",
+    //             statusDescription: "Error writing the image to a file"
+    //         });
+    //     });
 };

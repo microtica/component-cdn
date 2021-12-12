@@ -46,7 +46,11 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
     fs.writeFileSync(tmpPath, fileContent as string);
 
     await sharp(tmpPath)
-        .resize(width, height)
+        .resize({
+            width,
+            height,
+            fit: sharp.fit.cover
+        })
         .toFile(targetPath);
 
     const image = fs.readFileSync(targetPath).toString("base64");

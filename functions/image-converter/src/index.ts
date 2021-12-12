@@ -13,21 +13,13 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
     const targetPath = "/tmp/targetImage";
 
     const options = querystring.parse(request.querystring);
-    const maxSize = 2000;
-    const width = Math.min(parseInt(options.width as string) || maxSize, maxSize);
-    const height = Math.min(parseInt(options.height as string) || maxSize, maxSize);
+    const width = parseInt(options.width as string) || undefined;
+    const height = parseInt(options.height as string) || undefined;
 
-    // If convert option is disabled serve the content from the origin directly
-    if (!options.convert || options.convert === "false") {
+    // If convert option is disabled or width and height are not provided
+    // serve the content from the origin directly
+    if (!options.convert || options.convert === "false" || (!width && !height)) {
         return request;
-    }
-
-    // make sure input values are numbers
-    if (Number.isNaN(width) || Number.isNaN(height)) {
-        return {
-            status: "400",
-            statusDescription: "Invalid input for width and height."
-        };
     }
 
     // dowload the file from the origin server
@@ -53,8 +45,7 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
         await sharp(tmpPath)
             .resize({
                 width,
-                height,
-                fit: sharp.fit.cover
+                height
             })
             .toFile(targetPath);
     } catch (err) {

@@ -36,7 +36,7 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
     const [bucketName] = origin!.domainName.split(".");
     const { Body: fileContent } = await new S3().getObject({
         Bucket: bucketName!,
-        Key: `${origin!.path}${request.uri}`
+        Key: `${origin!.path}${request.uri}`.substring(1)
     }).promise();
 
     fs.writeFileSync(tmpPath, fileContent as string);

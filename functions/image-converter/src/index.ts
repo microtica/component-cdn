@@ -4,8 +4,9 @@ import fs from "fs";
 import querystring from "querystring";
 import sharp from "sharp";
 
+const HTTP_NOT_FOUND = 404;
+
 exports.handler = async (event: CloudFrontRequestEvent, context: Context, callback: Callback) => {
-    console.log(JSON.stringify(event));
     const request = event.Records[0].cf.request;
     const origin = request.origin!.s3;
     const tmpPath = "/tmp/sourceImage";
@@ -40,7 +41,7 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context, callba
         fs.writeFileSync(tmpPath, fileContent as string);
         contentType = ContentType;
     } catch (err) {
-        if (err.statusCode === 404) {
+        if (err.statusCode === HTTP_NOT_FOUND) {
             return {
                 status: "404",
                 statusDescription: "Requested file does not exist."

@@ -5,3 +5,4 @@ node_modules
 package-lock.json
 mic-component-wrapper.js
 **/dst
+**/package.zip

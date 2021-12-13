@@ -91,7 +91,7 @@ async function updateOriginRequestFunction(name, lambdaPackage) {
 
     await cfn.updateStack({
         StackName: name,
-        Capabilities: ["CAPABILITY_AUTO_EXPAND"],
+        Capabilities: ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM", "CAPABILITY_AUTO_EXPAND"],
         TemplateBody: JSON.stringify(require("./functions/image-converter/cfn.json")),
         Parameters: [{
             ParameterKey: "ImageConverterLambdaBucket",

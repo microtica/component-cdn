@@ -17,11 +17,12 @@ async function handleCreate() {
     transformTemplate(RetainContent === "true");
 
     const s3 = new S3({ region: "us-east-1" });
+    const edgeBucketName = keyName.toLowerCase();
     console.log("creatng new bucket...", keyName);
-    await s3.createBucket({ Bucket: keyName }).promise();
+    await s3.createBucket({ Bucket: edgeBucketName }).promise();
     console.log("bucket created", keyName);
 
-    const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(keyName);
+    const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
 
     console.log("upload packages", imageConverterPackage);
 

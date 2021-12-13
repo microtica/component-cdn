@@ -1,0 +1,79 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::Serverless-2016-10-31",
+    "Description": "Image converter Lambda@Edge",
+    "Parameters": {
+        "ImageConverterLambdaBucket": {
+            "Type": "String"
+        },
+        "ImageConverterLambdaBucketKey": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "ImageConverterLambda": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "Handler": "dst/index.handler",
+                "Runtime": "nodejs14.x",
+                "Timeout": 30,
+                "CodeUri": {
+                    "Bucket": {
+                        "Ref": "ImageConverterLambdaBucket"
+                    },
+                    "Key": {
+                        "Ref": "ImageConverterLambdaBucketKey"
+                    }
+                },
+                "AutoPublishAlias": "ImageConverter",
+                "Policies": [
+                    "AWSLambdaBasicExecutionRole",
+                    {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": "s3:GetObject",
+                                "Resource": "*"
+                            }
+                        ]
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "edgelambda.amazonaws.com",
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "ImageConverterLambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:GetFunction",
+                "FunctionName": {
+                    "Ref": "ImageConverterLambda"
+                },
+                "Principal": "replicator.lambda.amazonaws.com"
+            }
+        }
+    },
+    "Outputs": {
+        "Version": {
+            "Value": {
+                "Ref": "ImageConverterLambda.Version"
+            }
+        }
+    }
+}

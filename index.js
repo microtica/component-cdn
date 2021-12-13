@@ -18,14 +18,10 @@ async function handleCreate() {
 
     const s3 = new S3({ region: "us-east-1" });
     const edgeBucketName = keyName.toLowerCase();
-    console.log("creatng new bucket...", keyName);
     await s3.createBucket({ Bucket: edgeBucketName }).promise();
-    console.log("bucket created", keyName);
 
     const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
-
-    console.log("upload packages", imageConverterPackage);
-
+    
     try {
         const originRequestLambdaArn = await createOriginRequestFunction(keyName, imageConverterPackage);
         return {

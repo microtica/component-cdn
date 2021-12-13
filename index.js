@@ -97,6 +97,7 @@ async function updateOriginRequestFunction(name, lambdaPackage) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.updateStack({
+        StackName: name,
         TemplateBody: JSON.stringify(require("./functions/image-converter/cfn.json")),
         Parameters: [{
             ParameterKey: "ImageConverterLambdaBucket",

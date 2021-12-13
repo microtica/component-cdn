@@ -8,6 +8,9 @@
         },
         "ImageConverterLambdaBucketKey": {
             "Type": "String"
+        },
+        "Alias": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -25,7 +28,9 @@
                         "Ref": "ImageConverterLambdaBucketKey"
                     }
                 },
-                "AutoPublishAlias": "ImageConverter",
+                "AutoPublishAlias": {
+                    "Ref": "Alias"
+                },
                 "Policies": [
                     "AWSLambdaBasicExecutionRole",
                     {

@@ -76,6 +76,9 @@ async function createOriginRequestFunction(name, lambdaPackage) {
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
             ParameterValue: lambdaPackage.s3Key,
+        }, {
+            ParameterKey: "Alias",
+            ParameterValue: generateAlias()
         }]
     }).promise();
 
@@ -86,6 +89,10 @@ async function createOriginRequestFunction(name, lambdaPackage) {
     return stacks[0].Outputs.find(o => o.OutputKey === "Version").OutputValue;
 }
 
+function generateAlias() {
+    return `alias-${Math.floor(Math.random() * 10000000000)}`;
+}
+
 async function updateOriginRequestFunction(name, lambdaPackage) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
@@ -93,10 +100,13 @@ async function updateOriginRequestFunction(name, lambdaPackage) {
         TemplateBody: JSON.stringify(require("./functions/image-converter/cfn.json")),
         Parameters: [{
             ParameterKey: "ImageConverterLambdaBucket",
-            ParameterValue: lambdaPackage.s3Bucket,
+            ParameterValue: lambdaPackage.s3Bucket
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
-            ParameterValue: lambdaPackage.s3Key,
+            ParameterValue: lambdaPackage.s3Key
+        }, {
+            ParameterKey: "Alias",
+            ParameterValue: generateAlias()
         }]
     }).promise();
 

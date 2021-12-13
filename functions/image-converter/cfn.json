@@ -8,9 +8,6 @@
         },
         "ImageConverterLambdaBucketKey": {
             "Type": "String"
-        },
-        "Alias": {
-            "Type": "String"
         }
     },
     "Resources": {

@@ -76,9 +76,6 @@ async function createOriginRequestFunction(name, lambdaPackage) {
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
             ParameterValue: lambdaPackage.s3Key,
-        }, {
-            ParameterKey: "Alias",
-            ParameterValue: generateAlias()
         }]
     }).promise();
 
@@ -87,10 +84,6 @@ async function createOriginRequestFunction(name, lambdaPackage) {
     const { Stacks: stacks } = await cfn.describeStacks({ StackName: name }).promise();
 
     return stacks[0].Outputs.find(o => o.OutputKey === "Version").OutputValue;
-}
-
-function generateAlias() {
-    return `alias-${Math.floor(Math.random() * 10000000000)}`;
 }
 
 async function updateOriginRequestFunction(name, lambdaPackage) {
@@ -106,9 +99,6 @@ async function updateOriginRequestFunction(name, lambdaPackage) {
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
             ParameterValue: lambdaPackage.s3Key
-        }, {
-            ParameterKey: "Alias",
-            ParameterValue: generateAlias()
         }]
     }).promise();
 

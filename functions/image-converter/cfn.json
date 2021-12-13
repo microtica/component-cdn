@@ -28,9 +28,7 @@
                         "Ref": "ImageConverterLambdaBucketKey"
                     }
                 },
-                "AutoPublishAlias": {
-                    "Ref": "Alias"
-                },
+                "AutoPublishAlias": "ImageConverter",
                 "Policies": [
                     "AWSLambdaBasicExecutionRole",
                     {

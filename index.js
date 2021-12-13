@@ -21,7 +21,7 @@ async function handleCreate() {
     await s3.createBucket({ Bucket: edgeBucketName }).promise();
 
     const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
-    
+
     try {
         const originRequestLambdaArn = await createOriginRequestFunction(keyName, imageConverterPackage);
         return {
@@ -110,9 +110,42 @@ async function updateOriginRequestFunction(name, lambdaPackage) {
 }
 
 async function deleteOriginRequestFunction(name) {
+    const s3 = new S3({ region: "us-east-1" });
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.deleteStack({ StackName: name }).promise();
+    await purgeOutputBucket(name.toLowerCase());
+    await s3.deleteBucket({ Bucket: name.toLowerCase() }).promise();
+    await cfn.waitFor("stackDeleteComplete", { StackName: name }).promise();
+}
+
+async function purgeOutputBucket(bucket) {
+    let objects = null;
+    try {
+        objects = await new S3().listObjects({
+            Bucket: bucket
+        }).promise();
+    } catch (e) {
+        if (e.code !== 'NoSuchBucket') {
+            throw e;
+        }
+    }
+    if (objects) {
+        if (objects.Contents.length === 0) {
+            return;
+        }
+        const keys = objects.Contents.map(c => ({ Key: c.Key }));
+        const deleteRequest = {
+            Bucket: bucket,
+            Delete: {
+                Objects: keys
+            }
+        };
+        await new S3().deleteObjects(deleteRequest).promise();
+        if (objects.IsTruncated) {
+            await purgeOutputBucket(bucket);
+        }
+    }
 }
 
 async function transformTemplate(retainContent) {

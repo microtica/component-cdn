@@ -1,42 +1,60 @@
-const fs = require("fs");
 const path = require("path");
 const { NestedComponent } = require("@microtica/component").AwsCloud;
-const { Lambda, IAM, STS, CloudFormation } = require("aws-sdk");
+const { S3, CloudFormation } = require("aws-sdk");
 const concat = require("concat-stream");
 
 const component = new NestedComponent(
-    () => handleCreateOrUpdate("create"),
-    () => handleCreateOrUpdate("update"),
+    handleCreate,
+    handleUpdate,
     handleDelete,
     "/tmp/index.json",
 );
 
-async function handleCreateOrUpdate(action) {
+async function handleCreate() {
     const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID } = await component.getInputParameters();
+    const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
 
     transformTemplate(RetainContent === "true");
 
-    const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages();
+    const s3 = new S3({ region: "us-east-1" });
+    await s3.createBucket({ Bucket: keyName }).promise();
 
-    const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
+    const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(keyName);
 
-    let originRequestLambdaArn = "";
     try {
-        if (action === "create") {
-            originRequestLambdaArn = await createOriginRequestFunction(keyName, imageConverterPackage);
-        } else if (action === "update") {
-            originRequestLambdaArn = await updateOriginRequestFunction(keyName, imageConverterPackage);
-        }
+        const originRequestLambdaArn = await createOriginRequestFunction(keyName, imageConverterPackage);
+        return {
+            KeyName: keyName,
+            CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
+            CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
+            OriginRequestLambdaArn: originRequestLambdaArn
+        };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);
+        throw error;
     }
+}
 
-    return {
-        KeyName: keyName,
-        CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
-        CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
-        OriginRequestLambdaArn: originRequestLambdaArn
-    };
+async function handleUpdate() {
+    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID } = await component.getInputParameters();
+    const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
+
+    transformTemplate(RetainContent === "true");
+
+    const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(keyName);
+
+    try {
+        const originRequestLambdaArn = await updateOriginRequestFunction(keyName, imageConverterPackage);
+        return {
+            KeyName: keyName,
+            CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
+            CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
+            OriginRequestLambdaArn: originRequestLambdaArn
+        };
+    } catch (error) {
+        console.log("Error while provisioning Origin Request Lambda", error);
+        throw error;
+    }
 }
 
 async function handleDelete() {
@@ -115,10 +133,10 @@ async function transformTemplate(retainContent) {
  *
  * @return {*} 
  */
-async function uploadPackages() {
+async function uploadPackages(edgeBucketName) {
     return Promise.all([
         component.uploadComponentPackage(path.join(__dirname, "functions/cloudfront-key/package.zip")),
-        component.uploadComponentPackage(path.join(__dirname, "functions/image-converter/package.zip"))
+        component.uploadComponentPackage(path.join(__dirname, "functions/image-converter/package.zip"), edgeBucketName, "us-east-1")
     ]);
 }
 

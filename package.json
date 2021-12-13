@@ -11,7 +11,7 @@
     "author": "Microtica",
     "license": "ISC",
     "dependencies": {
-        "@microtica/component": "^3.3.0",
+        "@microtica/component": "^3.4.7",
         "concat-stream": "^2.0.0"
     },
     "devDependencies": {

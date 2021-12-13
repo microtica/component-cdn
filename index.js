@@ -41,8 +41,8 @@ async function handleUpdate() {
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
 
     transformTemplate(RetainContent === "true");
-
-    const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(keyName);
+    const edgeBucketName = keyName.toLowerCase();
+    const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
 
     try {
         const originRequestLambdaArn = await updateOriginRequestFunction(keyName, imageConverterPackage);

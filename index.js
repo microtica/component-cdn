@@ -32,7 +32,6 @@ async function handleCreate() {
         };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);
-        throw error;
     }
 }
 
@@ -54,7 +53,6 @@ async function handleUpdate() {
         };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);
-        throw error;
     }
 }
 

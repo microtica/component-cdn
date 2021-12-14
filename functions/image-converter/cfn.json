@@ -13,6 +13,7 @@
     "Resources": {
         "ImageConverterLambda": {
             "Type": "AWS::Serverless::Function",
+            "DeletionPolicy": "Retain",
             "Properties": {
                 "Handler": "dst/index.handler",
                 "Runtime": "nodejs14.x",

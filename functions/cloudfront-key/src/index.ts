@@ -15,8 +15,8 @@ export async function handler(event: CloudFormationCustomResourceEvent, context:
         const publicPem = pki.publicKeyToPem(publicKey);
 
         await commitStatus(event, "SUCCESS", {
-            privateKey: privatePem,
-            publicKey: publicPem
+            privateKey: Buffer.from(privatePem).toString("base64"),
+            publicKey: Buffer.from(publicPem).toString("base64")
         }, "RSA keys successfully created");
     } catch (error) {
         console.error(error);

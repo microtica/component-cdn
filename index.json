@@ -485,13 +485,13 @@
                             "\"privateKey\":",
                             "\"",
                             {
-                                "Fn::GetAtt": "CloudfrontKeyCustom.privateKey"
+                                "Fn::GetAtt": "CloudfrontKeyCustom.privateKeyBase64"
                             },
                             "\",",
                             "\"publicKey\":",
                             "\"",
                             {
-                                "Fn::GetAtt": "CloudfrontKeyCustom.publicKey"
+                                "Fn::GetAtt": "CloudfrontKeyCustom.publicKeyBase64"
                             },
                             "\",",
                             "\"keyId\":",

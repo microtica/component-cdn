@@ -15,7 +15,6 @@ export async function handler(event: CloudFormationCustomResourceEvent, context:
         const publicPem = pki.publicKeyToPem(publicKey);
 
         await commitStatus(event, "SUCCESS", {
-            privateKey: privatePem,
             publicKey: publicPem,
             privateKeyBase64: Buffer.from(privatePem).toString("base64"),
             publicKeyBase64: Buffer.from(publicPem).toString("base64")

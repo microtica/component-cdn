@@ -95,6 +95,12 @@
                     "IndexDocument": "index.html",
                     "ErrorDocument": "index.html"
                 },
+                "PublicAccessBlockConfiguration": {
+                    "BlockPublicAcls": true,
+                    "BlockPublicPolicy": true,
+                    "IgnorePublicAcls": true,
+                    "RestrictPublicBuckets": true
+                },
                 "BucketEncryption": {
                     "ServerSideEncryptionConfiguration": [
                         {

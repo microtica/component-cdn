@@ -46,17 +46,18 @@ console.log("Signed URL:", signedUrl);
 ```
 
 ## File upload
-This component allows you to upload files from CDN directly to S3 using `PUT` request and sending files as binary data.
+This component allows you to upload files on S3 through CDN using `PUT` request and sending files as binary data.
 
 > The upload feature is only availabe when restrict content access is enabled.
 
+Upload image file example:
 ```
 curl --location --request PUT 'https://d21hfhth3urhyh.cloudfront.net/image.jpg?<signed url query params>' \
 --header 'Content-Type: image/jpeg' \
 --data-binary '@/Users/user/image.jpg'
 ```
 
-The above example will upload a file named `image.jpg` on S3 in the root dir. You can also nest files in S3 folders (e.g. https://d21hfhth3urhyh.cloudfront.net/folder-name/image.jpg).
+The above example will upload a file named `image.jpg` on S3 in the root dir. You can also store files in S3 folders (e.g. https://d21hfhth3urhyh.cloudfront.net/folder-name/image.jpg).
 
 ## Image resizing
 This component has a built-in functionality for image resizing. Once resized once, then the image is cached and provided directly from the CDN.

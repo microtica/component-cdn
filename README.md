@@ -13,6 +13,51 @@ This components provisiones:
 
 The component can be configured to use a custom SSL certificate. This certificate should be provisioned in the N. Virginia (us-east-1) region, and it's only required if a custom domain is provided.
 
+## Restrict content access
+
+The component allows you to restrict access to the content served through the CDN. When restricted access is enabled, the only way to access the content is by using a signed URL.
+
+To enable content access restriction, set the component `RestrictAccess` parameter to `true`.
+
+Generate signed URL example:
+```
+const { CloudFront, SecretsManager } = require("aws-sdk");
+
+const { SecretString: secretString } = await new SecretsManager({
+    region: "<AWS REGION>"
+}).getSecretValue({
+    SecretId: "<'KeysSecret' component output value>"
+}).promise();
+
+const { keyId, privateKey } = JSON.parse(secretString);
+// Convert private key from base64 format to plain text
+const privateKeyPlain = Buffer.from(privateKey, "base64").toString("ascii");
+
+// Generate a signed URL
+const signedUrl = new CloudFront.Signer(
+    keyId,
+    privateKeyPlain
+).getSignedUrl({
+    url: '<URL of the file stored in S3 e.g. https://d25hfhth3urbcb.cloudfront.net/image.jpg>',
+    expires: Math.floor((new Date()).getTime() / 1000) + (60 * 60 * 1) // Current Time in UTC + time in seconds, (60 * 60 * 1 = 1 hour)
+});
+
+console.log("Signed URL:", signedUrl);
+```
+
+## File upload
+This component allows you to upload files from CDN directly to S3 using `PUT` request and sending files as binary data.
+
+> The upload feature is only availabe when restrict content access is enabled.
+
+```
+curl --location --request PUT 'https://d21hfhth3urhyh.cloudfront.net/image.jpg?<signed url query params>' \
+--header 'Content-Type: image/jpeg' \
+--data-binary '@/Users/user/image.jpg'
+```
+
+The above example will upload a file named `image.jpg` on S3 in the root dir. You can also nest files in S3 folders (e.g. https://d21hfhth3urhyh.cloudfront.net/folder-name/image.jpg).
+
 ## Image resizing
 This component has a built-in functionality for image resizing. Once resized once, then the image is cached and provided directly from the CDN.
 

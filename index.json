@@ -103,6 +103,33 @@
                             }
                         }
                     ]
+                },
+                "CorsConfiguration": {
+                    "Fn::If": [
+                        "ShouldRestrictAccess",
+                        {
+                            "CorsRules": [
+                                {
+                                    "AllowedHeaders": [
+                                        "*"
+                                    ],
+                                    "AllowedMethods": [
+                                        "GET",
+                                        "HEAD",
+                                        "POST",
+                                        "PUT"
+                                    ],
+                                    "AllowedOrigins": [
+                                        "*"
+                                    ],
+                                    "ExposeHeaders": []
+                                }
+                            ]
+                        },
+                        {
+                            "Ref": "AWS::NoValue"
+                        }
+                    ]
                 }
             }
         },
@@ -121,9 +148,19 @@
                                     "Fn::Sub": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
                                 }
                             },
-                            "Action": [
-                                "s3:GetObject"
-                            ],
+                            "Action": {
+                                "Fn::If": [
+                                    "ShouldRestrictAccess",
+                                    [
+                                        "s3:PutObject",
+                                        "s3:PutObjectAcl",
+                                        "s3:GetObject"
+                                    ],
+                                    [
+                                        "s3:GetObject"
+                                    ]
+                                ]
+                            },
                             "Resource": {
                                 "Fn::Sub": "arn:aws:s3:::${WebsiteBucket}/*"
                             }
@@ -178,10 +215,24 @@
                         ]
                     },
                     "DefaultCacheBehavior": {
-                        "AllowedMethods": [
-                            "GET",
-                            "HEAD"
-                        ],
+                        "AllowedMethods": {
+                            "Fn::If": [
+                                "ShouldRestrictAccess",
+                                [
+                                    "GET",
+                                    "HEAD",
+                                    "OPTIONS",
+                                    "PUT",
+                                    "PATCH",
+                                    "POST",
+                                    "DELETE"
+                                ],
+                                [
+                                    "GET",
+                                    "HEAD"
+                                ]
+                            ]
+                        },
                         "Compress": true,
                         "TargetOriginId": "S3Origin",
                         "ForwardedValues": {

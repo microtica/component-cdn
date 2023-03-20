@@ -62,7 +62,7 @@ function commitStatus(event: CloudFormationCustomResourceEvent, status: string, 
             console.log("STATUS: ", response.statusCode);
             console.log("HEADERS: ", JSON.stringify(response.headers));
             // Tell AWS Lambda that the function execution is done
-            resolve();
+            resolve(undefined);
         });
 
         request.on("error", error => {

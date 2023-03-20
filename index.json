@@ -290,7 +290,8 @@
                                 "AcmCertificateArn": {
                                     "Ref": "CertificateARN"
                                 },
-                                "SslSupportMethod": "sni-only"
+                                "SslSupportMethod": "sni-only",
+                                "MinimumProtocolVersion": "TLSv1.2_2021"
                             },
                             {
                                 "Ref": "AWS::NoValue"

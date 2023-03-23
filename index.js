@@ -1,7 +1,6 @@
 const path = require("path");
 const { NestedComponent } = require("@microtica/component").AwsCloud;
 const { S3, CloudFormation } = require("aws-sdk");
-const concat = require("concat-stream");
 
 const component = new NestedComponent(
     handleCreate,
@@ -9,6 +8,8 @@ const component = new NestedComponent(
     handleDelete,
     "/tmp/index.json",
 );
+
+const { AWS_REGION } = process.env;
 
 async function handleCreate() {
     const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID } = await component.getInputParameters();
@@ -76,6 +77,15 @@ async function createOriginRequestFunction(name, lambdaPackage) {
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
             ParameterValue: lambdaPackage.s3Key,
+        }, {
+            ParameterKey: "Region",
+            ParameterValue: AWS_REGION,
+        }, {
+            ParameterKey: "EnvId",
+            ParameterValue: MIC_ENVIRONMENT_ID,
+        }, {
+            ParameterKey: "ResourceId",
+            ParameterValue: MIC_RESOURCE_ID,
         }]
     }).promise();
 
@@ -99,6 +109,15 @@ async function updateOriginRequestFunction(name, lambdaPackage) {
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
             ParameterValue: lambdaPackage.s3Key
+        }, {
+            ParameterKey: "Region",
+            ParameterValue: AWS_REGION,
+        }, {
+            ParameterKey: "EnvId",
+            ParameterValue: MIC_ENVIRONMENT_ID,
+        }, {
+            ParameterKey: "ResourceId",
+            ParameterValue: MIC_RESOURCE_ID,
         }]
     }).promise();
 

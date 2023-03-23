@@ -8,6 +8,15 @@
         },
         "ImageConverterLambdaBucketKey": {
             "Type": "String"
+        },
+        "Region": {
+            "Type": "String"
+        },
+        "EnvId": {
+            "Type": "String"
+        },
+        "ResourceId": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -26,6 +35,19 @@
                         "Ref": "ImageConverterLambdaBucketKey"
                     }
                 },
+                "Environment": {
+                    "Variables": {
+                        "region": {
+                            "Ref": "Region"
+                        },
+                        "envId": {
+                            "Ref": "EnvId"
+                        },
+                        "resourceId": {
+                            "Ref": "ResourceId"
+                        }
+                    }
+                },
                 "AutoPublishAlias": "ImageConverter",
                 "Policies": [
                     "AWSLambdaBasicExecutionRole",
@@ -34,7 +56,9 @@
                         "Statement": [
                             {
                                 "Effect": "Allow",
-                                "Action": "s3:GetObject",
+                                "Action": [
+                                    "secretsmanager:GetSecretValue"
+                                ],
                                 "Resource": "*"
                             }
                         ]

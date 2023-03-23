@@ -1,19 +1,16 @@
 steps:
-  Clone:
-    title: Clone my component from Git
-    type: git-clone
-
   Package:
-    title: Package component
-    image: aws/codebuild/standard:4.0
-    commands:
-      - npm install
-      - npm run build
-      - npm test
-      - npm prune --production
-      - cd functions/cloudfront-key && npm run package
-      - cd ../image-converter && npm run package
-    artifacts:
-      files:
-        package_zip: ./
-        schema_json: ./schema.json
+      type: build
+      title: Package component
+      commands:
+        - npm install
+        - npm run build
+        - npm test
+        - npm prune --production
+        - cd functions/cloudfront-key && npm run package
+        - cd ../image-converter && npm run package
+
+      artifacts:
+        files:
+          package_zip: ./
+          schema_json: ./schema.json

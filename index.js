@@ -24,7 +24,7 @@ async function handleCreate() {
     const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
 
     try {
-        const originRequestLambdaArn = await createOriginRequestFunction(keyName, imageConverterPackage);
+        const originRequestLambdaArn = await createOriginRequestFunction(keyName, imageConverterPackage, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID);
         return {
             KeyName: keyName,
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
@@ -45,7 +45,7 @@ async function handleUpdate() {
     const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
 
     try {
-        const originRequestLambdaArn = await updateOriginRequestFunction(keyName, imageConverterPackage);
+        const originRequestLambdaArn = await updateOriginRequestFunction(keyName, imageConverterPackage, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID);
         return {
             KeyName: keyName,
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
@@ -64,7 +64,7 @@ async function handleDelete() {
     await deleteOriginRequestFunction(keyName);
 }
 
-async function createOriginRequestFunction(name, lambdaPackage) {
+async function createOriginRequestFunction(name, lambdaPackage, envId, resourceId) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.createStack({
@@ -82,10 +82,10 @@ async function createOriginRequestFunction(name, lambdaPackage) {
             ParameterValue: AWS_REGION,
         }, {
             ParameterKey: "EnvId",
-            ParameterValue: MIC_ENVIRONMENT_ID,
+            ParameterValue: envId,
         }, {
             ParameterKey: "ResourceId",
-            ParameterValue: MIC_RESOURCE_ID,
+            ParameterValue: resourceId,
         }]
     }).promise();
 
@@ -96,7 +96,7 @@ async function createOriginRequestFunction(name, lambdaPackage) {
     return stacks[0].Outputs.find(o => o.OutputKey === "Version").OutputValue;
 }
 
-async function updateOriginRequestFunction(name, lambdaPackage) {
+async function updateOriginRequestFunction(name, lambdaPackage, envId, resourceId) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.updateStack({
@@ -114,10 +114,10 @@ async function updateOriginRequestFunction(name, lambdaPackage) {
             ParameterValue: AWS_REGION,
         }, {
             ParameterKey: "EnvId",
-            ParameterValue: MIC_ENVIRONMENT_ID,
+            ParameterValue: envId,
         }, {
             ParameterKey: "ResourceId",
-            ParameterValue: MIC_RESOURCE_ID,
+            ParameterValue: resourceId,
         }]
     }).promise();
 

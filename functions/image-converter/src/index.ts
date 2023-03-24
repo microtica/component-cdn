@@ -5,8 +5,6 @@ import querystring from "querystring";
 import sharp from "sharp";
 
 exports.handler = async (event: CloudFrontRequestEvent, context: Context) => {
-    console.log("EVENT", JSON.stringify(event));
-
     const request = event.Records[0].cf.request;
     const config = event.Records[0].cf.config;
 
@@ -21,8 +19,10 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context) => {
     }
 
     try {
-        const MINUS_TWO = -2;
-        const functionArn = context.invokedFunctionArn.split(":").slice(0, MINUS_TWO).join(":");
+        const [, , , , AWS_ACCOUNT_ID, , FULL_FUNCTION_NAME] = context.invokedFunctionArn.split(":");
+        const [AWS_REGION, FUNCTION_NAME] = FULL_FUNCTION_NAME.split(".");
+        const functionArn = `arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:${FUNCTION_NAME}`;
+
         const { image, contentType } = await convertImage(
             functionArn,
             config.distributionDomainName,
@@ -106,12 +106,9 @@ const convertImage = async (functionArn: string, hostname: string, url: string, 
 
 const getSignedUrl = async (functionArn: string, originalUrl: string) => {
     try {
-        console.log("functionArn", functionArn);
-        const { Tags: tags } = await new Lambda().listTags({
+        const { Tags: tags } = await new Lambda({ region: "us-east-1" }).listTags({
             Resource: functionArn
         }).promise();
-
-        console.log("TAGS", tags);
 
         const region = tags!["microtica:region"];
         const envId = tags!["microtica:environment"];
@@ -128,8 +125,6 @@ const getSignedUrl = async (functionArn: string, originalUrl: string) => {
                 Values: [envId!, resourceId!]
             }]
         }).promise();
-
-        console.log("secrets", JSON.stringify(secrets));
 
         const { SecretString: secretString } = await secretManager.getSecretValue({
             SecretId: secrets![0].ARN!

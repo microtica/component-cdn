@@ -44,7 +44,8 @@
                             {
                                 "Effect": "Allow",
                                 "Action": [
-                                    "secretsmanager:GetSecretValue"
+                                    "secretsmanager:GetSecretValue",
+                                    "lambda:ListTags"
                                 ],
                                 "Resource": "*"
                             }

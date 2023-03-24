@@ -2,6 +2,8 @@ steps:
   Package:
       type: build
       title: Package component
+      runtime:
+        computeType: MEDIUM
       commands:
         - npm install
         - npm run build

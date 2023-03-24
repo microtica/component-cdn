@@ -431,7 +431,7 @@
                     ]
                 },
                 "Handler": "index.handler",
-                "Runtime": "nodejs14.x",
+                "Runtime": "nodejs16.x",
                 "Timeout": 30
             }
         },
@@ -503,7 +503,7 @@
             "Condition": "ShouldRestrictAccess",
             "Properties": {
                 "Handler": "dst/index.handler",
-                "Runtime": "nodejs14.x",
+                "Runtime": "nodejs16.x",
                 "Timeout": 30,
                 "CodeUri": {
                     "Bucket": {

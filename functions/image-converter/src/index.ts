@@ -1,10 +1,10 @@
-import { CloudFrontRequestEvent } from "aws-lambda";
-import { CloudFront, SecretsManager } from "aws-sdk";
+import { CloudFrontRequestEvent, Context } from "aws-lambda";
+import { CloudFront, SecretsManager, Lambda } from "aws-sdk";
 import https from "https";
 import querystring from "querystring";
 import sharp from "sharp";
 
-exports.handler = async (event: CloudFrontRequestEvent) => {
+exports.handler = async (event: CloudFrontRequestEvent, context: Context) => {
     console.log("EVENT", JSON.stringify(event));
 
     const request = event.Records[0].cf.request;
@@ -21,7 +21,9 @@ exports.handler = async (event: CloudFrontRequestEvent) => {
     }
 
     try {
+        const functionArn = context.invokedFunctionArn.split(':').slice(0, -2).join(':');
         const { image, contentType } = await convertImage(
+            functionArn,
             config.distributionDomainName,
             request.uri,
             width,
@@ -49,8 +51,8 @@ exports.handler = async (event: CloudFrontRequestEvent) => {
     }
 };
 
-const convertImage = async (hostname: string, url: string, width?: number, height?: number) => {
-    const signedUrl = await getSignedUrl(`https://${hostname}${url}`);
+const convertImage = async (functionArn: string, hostname: string, url: string, width?: number, height?: number) => {
+    const signedUrl = await getSignedUrl(functionArn, `https://${hostname}${url}`);
 
     return new Promise((resolve: (arg: { image: string; contentType?: string; }) => void, reject) => {
         // make an HTTPS request to the CloudFront URL
@@ -101,9 +103,19 @@ const convertImage = async (hostname: string, url: string, width?: number, heigh
     });
 };
 
-const getSignedUrl = async (originalUrl: string) => {
+const getSignedUrl = async (functionArn: string, originalUrl: string) => {
     try {
-        const { region, envId, resourceId } = process.env;
+        console.log("functionArn", functionArn);
+        const { Tags: tags } = await new Lambda().listTags({
+            Resource: functionArn
+        }).promise();
+
+        console.log("TAGS", tags);
+
+        const region = tags!["microtica:region"];
+        const envId = tags!["microtica:environment"];
+        const resourceId = tags!["microtica:resource"];
+
         const secretManager = new SecretsManager({ region });
 
         const { SecretList: secrets } = await secretManager.listSecrets({

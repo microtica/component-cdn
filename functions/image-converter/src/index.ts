@@ -1,5 +1,5 @@
 import { CloudFrontRequestEvent, Context } from "aws-lambda";
-import { CloudFront, SecretsManager, Lambda } from "aws-sdk";
+import { CloudFront, Lambda, SecretsManager } from "aws-sdk";
 import https from "https";
 import querystring from "querystring";
 import sharp from "sharp";
@@ -21,7 +21,8 @@ exports.handler = async (event: CloudFrontRequestEvent, context: Context) => {
     }
 
     try {
-        const functionArn = context.invokedFunctionArn.split(':').slice(0, -2).join(':');
+        const MINUS_TWO = -2;
+        const functionArn = context.invokedFunctionArn.split(":").slice(0, MINUS_TWO).join(":");
         const { image, contentType } = await convertImage(
             functionArn,
             config.distributionDomainName,

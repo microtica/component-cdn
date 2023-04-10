@@ -308,6 +308,13 @@
                     "MaxTTL": 86400,
                     "MinTTL": 1800,
                     "ParametersInCacheKeyAndForwardedToOrigin": {
+                        "CookiesConfig": {
+                            "CookieBehavior": "none"
+                        },
+                        "EnableAcceptEncodingGzip": true,
+                        "HeadersConfig": {
+                            "HeaderBehavior": "none"
+                        },
                         "QueryStringsConfig": {
                             "QueryStringBehavior": "whitelist",
                             "QueryStrings": [

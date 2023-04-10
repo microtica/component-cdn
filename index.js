@@ -29,7 +29,8 @@ async function handleCreate() {
             KeyName: keyName,
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
             CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
-            OriginRequestLambdaArn: originRequestLambdaArn
+            OriginRequestLambdaArn: originRequestLambdaArn,
+            ResourcePrefix: keyName
         };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);
@@ -50,7 +51,8 @@ async function handleUpdate() {
             KeyName: keyName,
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
             CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
-            OriginRequestLambdaArn: originRequestLambdaArn
+            OriginRequestLambdaArn: originRequestLambdaArn,
+            ResourcePrefix: keyName
         };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);

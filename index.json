@@ -41,6 +41,9 @@
         },
         "OriginRequestLambdaArn": {
             "Type": "String"
+        },
+        "ResourcePrefix": {
+            "Type": "String"
         }
     },
     "Conditions": {
@@ -240,18 +243,10 @@
                         },
                         "Compress": true,
                         "TargetOriginId": "S3Origin",
-                        "ForwardedValues": {
-                            "QueryString": true,
-                            "QueryStringCacheKeys": [
-                                "width",
-                                "height",
-                                "convert"
-                            ],
-                            "Cookies": {
-                                "Forward": "none"
-                            }
-                        },
                         "ViewerProtocolPolicy": "redirect-to-https",
+                        "CachePolicyId": {
+                            "Ref": "DistributionCachePolicy"
+                        },
                         "TrustedKeyGroups": {
                             "Fn::If": [
                                 "ShouldRestrictAccess",
@@ -297,6 +292,30 @@
                                 "Ref": "AWS::NoValue"
                             }
                         ]
+                    }
+                }
+            }
+        },
+        "DistributionCachePolicy": {
+            "Type": "AWS::CloudFront::CachePolicy",
+            "Properties": {
+                "CachePolicyConfig": {
+                    "Name": {
+                        "Fn::Sub": "${ResourcePrefix}-cache-policy"
+                    },
+                    "Comment": "Cache requests based on query string parameters",
+                    "DefaultTTL": 3600,
+                    "MaxTTL": 86400,
+                    "MinTTL": 1800,
+                    "ParametersInCacheKeyAndForwardedToOrigin": {
+                        "QueryStringsConfig": {
+                            "QueryStringBehavior": "whitelist",
+                            "QueryStrings": [
+                                "width",
+                                "height",
+                                "convert"
+                            ]
+                        }
                     }
                 }
             }

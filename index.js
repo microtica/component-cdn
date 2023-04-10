@@ -12,7 +12,7 @@ const component = new NestedComponent(
 const { AWS_REGION } = process.env;
 
 async function handleCreate() {
-    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID } = await component.getInputParameters();
+    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess } = await component.getInputParameters();
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
 
     transformTemplate(RetainContent === "true");
@@ -24,7 +24,13 @@ async function handleCreate() {
     const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
 
     try {
-        const originRequestLambdaArn = await createOriginRequestFunction(keyName, imageConverterPackage, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID);
+        const originRequestLambdaArn = await createOriginRequestFunction(
+            keyName,
+            imageConverterPackage,
+            MIC_ENVIRONMENT_ID,
+            MIC_RESOURCE_ID,
+            RestrictAccess
+        );
         return {
             KeyName: keyName,
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
@@ -38,7 +44,7 @@ async function handleCreate() {
 }
 
 async function handleUpdate() {
-    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID } = await component.getInputParameters();
+    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess } = await component.getInputParameters();
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
 
     transformTemplate(RetainContent === "true");
@@ -46,7 +52,13 @@ async function handleUpdate() {
     const [cloudfrontKeyPackage, imageConverterPackage] = await uploadPackages(edgeBucketName);
 
     try {
-        const originRequestLambdaArn = await updateOriginRequestFunction(keyName, imageConverterPackage, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID);
+        const originRequestLambdaArn = await updateOriginRequestFunction(
+            keyName,
+            imageConverterPackage,
+            MIC_ENVIRONMENT_ID,
+            MIC_RESOURCE_ID,
+            RestrictAccess
+        );
         return {
             KeyName: keyName,
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
@@ -66,7 +78,7 @@ async function handleDelete() {
     await deleteOriginRequestFunction(keyName);
 }
 
-async function createOriginRequestFunction(name, lambdaPackage, envId, resourceId) {
+async function createOriginRequestFunction(name, lambdaPackage, envId, resourceId, restrictAccess) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.createStack({
@@ -75,19 +87,22 @@ async function createOriginRequestFunction(name, lambdaPackage, envId, resourceI
         TemplateBody: JSON.stringify(require("./functions/image-converter/cfn.json")),
         Parameters: [{
             ParameterKey: "ImageConverterLambdaBucket",
-            ParameterValue: lambdaPackage.s3Bucket,
+            ParameterValue: lambdaPackage.s3Bucket
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
-            ParameterValue: lambdaPackage.s3Key,
+            ParameterValue: lambdaPackage.s3Key
         }, {
             ParameterKey: "Region",
-            ParameterValue: AWS_REGION,
+            ParameterValue: AWS_REGION
         }, {
             ParameterKey: "EnvId",
-            ParameterValue: envId,
+            ParameterValue: envId
         }, {
             ParameterKey: "ResourceId",
-            ParameterValue: resourceId,
+            ParameterValue: resourceId
+        }, {
+            ParameterKey: "RestrictAccess",
+            ParameterValue: restrictAccess
         }]
     }).promise();
 
@@ -98,7 +113,7 @@ async function createOriginRequestFunction(name, lambdaPackage, envId, resourceI
     return stacks[0].Outputs.find(o => o.OutputKey === "Version").OutputValue;
 }
 
-async function updateOriginRequestFunction(name, lambdaPackage, envId, resourceId) {
+async function updateOriginRequestFunction(name, lambdaPackage, envId, resourceId, restrictAccess) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.updateStack({
@@ -113,13 +128,16 @@ async function updateOriginRequestFunction(name, lambdaPackage, envId, resourceI
             ParameterValue: lambdaPackage.s3Key
         }, {
             ParameterKey: "Region",
-            ParameterValue: AWS_REGION,
+            ParameterValue: AWS_REGION
         }, {
             ParameterKey: "EnvId",
-            ParameterValue: envId,
+            ParameterValue: envId
         }, {
             ParameterKey: "ResourceId",
-            ParameterValue: resourceId,
+            ParameterValue: resourceId
+        }, {
+            ParameterKey: "RestrictAccess",
+            ParameterValue: restrictAccess
         }]
     }).promise();
 

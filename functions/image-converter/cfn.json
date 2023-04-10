@@ -17,6 +17,9 @@
         },
         "ResourceId": {
             "Type": "String"
+        },
+        "RestrictAccess": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -79,6 +82,9 @@
                     },
                     "microtica:region": {
                         "Ref": "Region"
+                    },
+                    "microtica:resource:restrict-access": {
+                        "Ref": "RestrictAccess"
                     }
                 }
             }

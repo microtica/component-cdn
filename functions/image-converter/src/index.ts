@@ -113,6 +113,11 @@ const getSignedUrl = async (functionArn: string, originalUrl: string) => {
         const region = tags!["microtica:region"];
         const envId = tags!["microtica:environment"];
         const resourceId = tags!["microtica:resource"];
+        const restrictedAccess = tags!["microtica:resource:restrict-access"];
+
+        if (restrictedAccess === "false") {
+            return originalUrl;
+        }
 
         const secretManager = new SecretsManager({ region });
 

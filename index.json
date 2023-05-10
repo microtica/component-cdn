@@ -363,7 +363,7 @@
                         "Fn::Sub": "${ResourcePrefix}-cors-policy"
                     },
                     "CorsConfig": {
-                        "AccessControlAllowCredentials": true,
+                        "AccessControlAllowCredentials": false,
                         "AccessControlAllowHeaders": {
                             "Items": [
                                 "*"

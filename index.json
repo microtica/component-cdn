@@ -29,17 +29,9 @@
                 "false"
             ]
         },
-        "EnableCORS": {
-            "Type": "String",
-            "Default": "false",
-            "AllowedValues": [
-                "true",
-                "false"
-            ]
-        },
         "AllowOrigins": {
-            "Type": "CommaDelimitedList",
-            "Default": ""
+            "Type": "String",
+            "Default": "*"
         },
         "KeyName": {
             "Type": "String",
@@ -104,14 +96,6 @@
             "Fn::Equals": [
                 {
                     "Ref": "RestrictAccess"
-                },
-                "true"
-            ]
-        },
-        "ShouldEnableCORS": {
-            "Fn::Equals": [
-                {
-                    "Ref": "EnableCORS"
                 },
                 "true"
             ]
@@ -284,17 +268,6 @@
                         "CachePolicyId": {
                             "Ref": "DistributionCachePolicy"
                         },
-                        "ResponseHeadersPolicyId": {
-                            "Fn::If": [
-                                "ShouldEnableCORS",
-                                {
-                                    "Ref": "DistributionCORSPolicy"
-                                },
-                                {
-                                    "Ref": "AWS::NoValue"
-                                }
-                            ]
-                        },
                         "TrustedKeyGroups": {
                             "Fn::If": [
                                 "ShouldRestrictAccess",
@@ -375,65 +348,28 @@
                 }
             }
         },
-        "DistributionCORSPolicy": {
-            "Type": "AWS::CloudFront::ResponseHeadersPolicy",
-            "Condition": "ShouldEnableCORS",
-            "Properties": {
-                "ResponseHeadersPolicyConfig": {
-                    "Name": {
-                        "Fn::Sub": "${ResourcePrefix}-cors-policy"
-                    },
-                    "CorsConfig": {
-                        "AccessControlAllowCredentials": false,
-                        "AccessControlAllowHeaders": {
-                            "Items": [
-                                "*"
-                            ]
-                        },
-                        "AccessControlAllowMethods": {
-                            "Items": [
-                                "ALL"
-                            ]
-                        },
-                        "AccessControlAllowOrigins": {
-                            "Items": {
-                                "Fn::If": [
-                                    "HasAccessOrigins",
-                                    {
-                                        "Ref": "AllowOrigins"
-                                    },
-                                    [
-                                        "*"
-                                    ]
-                                ]
-                            }
-                        },
-                        "OriginOverride": true
-                    }
-                }
-            }
-        },
         "WebsiteSecurityHeadersFunction": {
             "Type": "AWS::CloudFront::Function",
             "Properties": {
                 "AutoPublish": true,
                 "FunctionCode": {
                     "Fn::Join": [
-                        "\n",
+                        "",
                         [
-                            "function handler(event) {",
-                            "    var response = event.response;",
-                            "    var headers = response.headers;",
-                            "    // Set HTTP security headers",
-                            "    // Since JavaScript doesn't allow for hyphens in variable names, we use the dict[\"key\"] notation ",
-                            "    headers['strict-transport-security'] = { value: 'max-age=31536000; includeSubDomains'}; ",
-                            "    headers['x-content-type-options'] = { value: 'nosniff'}; ",
-                            "    headers['x-frame-options'] = {value: 'SAMEORIGIN'}; ",
-                            "    headers['x-xss-protection'] = {value: '1; mode=block'};",
-                            "    headers['referrer-policy'] = {value: 'strict-origin-when-cross-origin'};",
-                            "    headers['permissions-policy'] = {value: \"microphone 'self'; geolocation 'self'; autoplay 'self'; autoplay 'self'; camera: 'self'; fullscreen: 'self'; layout-animations: 'self'; gyroscope 'self'; payment 'self'; web-share 'self'\"};",
-                            "    // Return the response to viewers",
-                            "    return response;",
+                            "function handler(event) {\n",
+                            "    var response = event.response;\n",
+                            "    var headers = response.headers;\n",
+                            "    // Set HTTP security headers\n",
+                            "    // Since JavaScript doesn't allow for hyphens in variable names, we use the dict[\"key\"] notation\n",
+                            "    headers['strict-transport-security'] = { value: 'max-age=31536000; includeSubDomains'};\n",
+                            "    headers['x-content-type-options'] = { value: 'nosniff'};\n",
+                            "    headers['x-frame-options'] = {value: 'SAMEORIGIN'};\n",
+                            "    headers['x-xss-protection'] = {value: '1; mode=block'};\n",
+                            "    headers['referrer-policy'] = {value: 'strict-origin-when-cross-origin'};\n",
+                            "    headers['permissions-policy'] = {value: \"microphone 'self'; geolocation 'self'; autoplay 'self'; autoplay 'self'; camera: 'self'; fullscreen: 'self'; layout-animations: 'self'; gyroscope 'self'; payment 'self'; web-share 'self'\"};\n",
+                            "    headers['access-control-allow-origin'] = {value: '", {"Ref": "AllowOrigins"}, "'};\n",
+                            "    // Return the response to viewers\n",
+                            "    return response;\n",
                             "}"
                         ]
                     ]

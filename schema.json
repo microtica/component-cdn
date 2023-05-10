@@ -35,25 +35,16 @@
                     ],
                     "description": "If enabled, the S3 bucket and the content stored in the bucket will be retained."
                 },
-                "EnableCORS": {
-                    "type": "string",
-                    "default": "false",
-                    "enum": [
-                        "true",
-                        "false"
-                    ],
-                    "description": "If enabled, the requests will be allowed from any domain from the browser."
-                },
                 "AllowOrigins": {
                     "type": "string",
-                    "default": " ",
-                    "description": "Comma delimited list of origins. E.g. example.com,example2.com"
+                    "default": "*",
+                    "description": "Comma delimited list of origins. E.g. example.com,*.example.com,https://example.com"
                 }
             },
             "required": [
                 "RestrictAccess",
                 "RetainContent",
-                "EnableCORS"
+                "AllowOrigins"
             ]
         }
     },

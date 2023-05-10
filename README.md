@@ -1,4 +1,4 @@
-# CDN (Content Delivery Network) component
+# CDN (Content Delivery Network) component 
 
 Infrastructure setup for hosting Single Page Applications (SPA) and any other kind of public or private static content (e.g. images, PDFs etc.)
 

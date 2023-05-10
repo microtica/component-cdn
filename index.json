@@ -37,6 +37,10 @@
                 "false"
             ]
         },
+        "AllowOrigins": {
+            "Type": "CommaDelimitedList",
+            "Default": ""
+        },
         "KeyName": {
             "Type": "String",
             "Default": ""
@@ -73,6 +77,23 @@
                     "Fn::Equals": [
                         {
                             "Ref": "DomainName"
+                        },
+                        ""
+                    ]
+                }
+            ]
+        },
+        "HasAccessOrigins": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Fn::Join": [
+                                "",
+                                {
+                                    "Ref": "AllowOrigins"
+                                }
+                            ]
                         },
                         ""
                     ]
@@ -375,9 +396,17 @@
                             ]
                         },
                         "AccessControlAllowOrigins": {
-                            "Items": [
-                                "*"
-                            ]
+                            "Items": {
+                                "Fn::If": [
+                                    "HasAccessOrigins",
+                                    {
+                                        "Ref": "AllowOrigins"
+                                    },
+                                    [
+                                        "*"
+                                    ]
+                                ]
+                            }
                         },
                         "OriginOverride": true
                     }

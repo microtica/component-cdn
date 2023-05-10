@@ -43,6 +43,11 @@
                         "false"
                     ],
                     "description": "If enabled, the requests will be allowed from any domain from the browser."
+                },
+                "AllowOrigins": {
+                    "type": "string",
+                    "default": " ",
+                    "description": "Comma delimited list of origins. E.g. example.com,example2.com"
                 }
             },
             "required": [

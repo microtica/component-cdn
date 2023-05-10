@@ -29,6 +29,14 @@
                 "false"
             ]
         },
+        "EnableCORS": {
+            "Type": "String",
+            "Default": "false",
+            "AllowedValues": [
+                "true",
+                "false"
+            ]
+        },
         "KeyName": {
             "Type": "String",
             "Default": ""
@@ -75,6 +83,14 @@
             "Fn::Equals": [
                 {
                     "Ref": "RestrictAccess"
+                },
+                "true"
+            ]
+        },
+        "ShouldEnableCORS": {
+            "Fn::Equals": [
+                {
+                    "Ref": "EnableCORS"
                 },
                 "true"
             ]
@@ -247,6 +263,17 @@
                         "CachePolicyId": {
                             "Ref": "DistributionCachePolicy"
                         },
+                        "ResponseHeadersPolicyId": {
+                            "Fn::If": [
+                                "ShouldEnableCORS",
+                                {
+                                    "Ref": "DistributionCORSPolicy"
+                                },
+                                {
+                                    "Ref": "AWS::NoValue"
+                                }
+                            ]
+                        },
                         "TrustedKeyGroups": {
                             "Fn::If": [
                                 "ShouldRestrictAccess",
@@ -323,6 +350,36 @@
                                 "convert"
                             ]
                         }
+                    }
+                }
+            }
+        },
+        "DistributionCORSPolicy": {
+            "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+            "Condition": "ShouldEnableCORS",
+            "Properties": {
+                "ResponseHeadersPolicyConfig": {
+                    "Name": {
+                        "Fn::Sub": "${ResourcePrefix}-cors-policy"
+                    },
+                    "CorsConfig": {
+                        "AccessControlAllowCredentials": true,
+                        "AccessControlAllowHeaders": {
+                            "Items": [
+                                "*"
+                            ]
+                        },
+                        "AccessControlAllowMethods": {
+                            "Items": [
+                                "*"
+                            ]
+                        },
+                        "AccessControlAllowOrigins": {
+                            "Items": [
+                                "*"
+                            ]
+                        },
+                        "OriginOverride": true
                     }
                 }
             }

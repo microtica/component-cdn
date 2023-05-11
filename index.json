@@ -352,7 +352,7 @@
                             "    headers['x-xss-protection'] = {value: '1; mode=block'};",
                             "    headers['referrer-policy'] = {value: 'strict-origin-when-cross-origin'};",
                             "    headers['permissions-policy'] = {value: \"microphone 'self'; geolocation 'self'; autoplay 'self'; autoplay 'self'; camera: 'self'; fullscreen: 'self'; layout-animations: 'self'; gyroscope 'self'; payment 'self'; web-share 'self'\"};",
-                            "    if(allowOrigins.split(',').includes(request.headers.origin.value)) {",
+                            "    if(request.headers.origin && allowOrigins.split(',').includes(request.headers.origin.value)) {",
                             "       headers['access-control-allow-origin'] = {value: request.headers.origin.value};",
                             "    } else if (allowOrigins === '*') {",
                             "       headers['access-control-allow-origin'] = {value: '*'};",

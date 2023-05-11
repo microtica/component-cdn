@@ -38,7 +38,7 @@
                 "AllowOrigins": {
                     "type": "string",
                     "default": "*",
-                    "description": "Comma delimited list of origins. E.g. example.com,*.example.com,https://example.com"
+                    "description": "Comma delimited list of origins. E.g. http://example.com,https://mydomain.com"
                 }
             },
             "required": [

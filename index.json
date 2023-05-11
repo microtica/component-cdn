@@ -340,6 +340,7 @@
                         "\n",
                         [
                             "function handler(event) {",
+                            "    var request = event.request;",
                             "    var response = event.response;",
                             "    var headers = response.headers;",
                             {"Fn::Sub": "    var allowOrigins = '${AllowOrigins}';"},
@@ -351,8 +352,8 @@
                             "    headers['x-xss-protection'] = {value: '1; mode=block'};",
                             "    headers['referrer-policy'] = {value: 'strict-origin-when-cross-origin'};",
                             "    headers['permissions-policy'] = {value: \"microphone 'self'; geolocation 'self'; autoplay 'self'; autoplay 'self'; camera: 'self'; fullscreen: 'self'; layout-animations: 'self'; gyroscope 'self'; payment 'self'; web-share 'self'\"};",
-                            "    if(allowOrigins.split(',').includes(headers['origin'].value)) {",
-                            "       headers['access-control-allow-origin'] = {value: headers['origin'].value};",
+                            "    if(allowOrigins.split(',').includes(request.headers.host.value)) {",
+                            "       headers['access-control-allow-origin'] = {value: request.headers.host.value};",
                             "    } else if (allowOrigins === '*') {",
                             "       headers['access-control-allow-origin'] = {value: '*'};",
                             "    }",

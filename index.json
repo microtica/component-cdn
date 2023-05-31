@@ -109,9 +109,11 @@
                     "RestrictPublicBuckets": true
                 },
                 "OwnershipControls": {
-                    "Rules": [{
-                        "ObjectOwnership": "BucketOwnerEnforced"
-                    }]
+                    "Rules": [
+                        {
+                            "ObjectOwnership": "BucketOwnerEnforced"
+                        }
+                    ]
                 },
                 "BucketEncryption": {
                     "ServerSideEncryptionConfiguration": [
@@ -205,7 +207,8 @@
                             "Id": "S3Origin",
                             "OriginAccessControlId": {
                                 "Fn::GetAtt": "DistributionOriginAccessControl.Id"
-                            }
+                            },
+                            "S3OriginConfig": {}
                         }
                     ],
                     "Enabled": true,

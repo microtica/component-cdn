@@ -311,7 +311,7 @@
                         "Fn::Sub": "${ResourcePrefix}-origin-access-control"
                     },
                     "OriginAccessControlOriginType": "s3",
-                    "SigningBehavior": "always",
+                    "SigningBehavior": "no-override",
                     "SigningProtocol": "sigv4"
                 }
             }

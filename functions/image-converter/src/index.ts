@@ -123,11 +123,11 @@ const getSignedUrl = async (functionArn: string, originalUrl: string) => {
 
         const { SecretList: secrets } = await secretManager.listSecrets({
             Filters: [{
-                Key: "tag-key",
-                Values: ["microtica:environment", "microtica:resource"]
+                Key: "tag-value",
+                Values: [envId!]
             }, {
                 Key: "tag-value",
-                Values: [envId!, resourceId!]
+                Values: [resourceId!]
             }]
         }).promise();
 

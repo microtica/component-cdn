@@ -380,6 +380,8 @@
                             "    } else if (allowOrigins === '*') {",
                             "       headers['access-control-allow-origin'] = {value: '*'};",
                             "    }",
+                            "    // Set HTTP cache headers",
+                            "    headers['cache-control'] = { value: 'private, max-age=2147483647'};",
                             "    // Return the response to viewers",
                             "    return response;",
                             "}"

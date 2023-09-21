@@ -48,7 +48,13 @@ async function handleCreate() {
 async function handleUpdate() {
     const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess, DomainName } = await component.getInputParameters();
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
+
+    console.log("DomainName", DomainName);
+    console.log("DomainName.trim()", DomainName.trim());
+
     const staticDomainName = DomainName.trim() ? `${DomainName.split(".")[0]}-static.${DomainName.split(".").slice(1).join(".")}` : "";
+
+    console.log("staticDomainName", staticDomainName);
 
     transformTemplate(RetainContent === "true");
     const edgeBucketName = keyName.toLowerCase();
@@ -62,6 +68,14 @@ async function handleUpdate() {
             MIC_RESOURCE_ID,
             RestrictAccess
         );
+        console.log("RESPONSE", {
+            KeyName: keyName,
+            CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
+            CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
+            OriginRequestLambdaArn: originRequestLambdaArn,
+            ResourcePrefix: keyName,
+            StaticDomainName: staticDomainName
+        });
         return {
             KeyName: keyName,
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,

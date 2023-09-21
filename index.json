@@ -115,7 +115,7 @@
                     ]
                 },
                 {
-                    "Ref": "ShouldRestrictAccess"
+                    "Condition": "ShouldRestrictAccess"
                 }
             ]
         }

@@ -26,6 +26,11 @@
                     ],
                     "description": "If set to 'true' the content will only be available with pre-signed URLs or cookies. The private RSA key and the Key Id will be stored in Secret Manager. Use the 'KeysSecret' output parameter to get the secret ARN and access the keys in your app."
                 },
+                "ExcludedRestrictedPath": {
+                    "type": "string",
+                    "default": " ",
+                    "description": "When RestrictAccess is set to true, this path pattern will be excluded from access restrictions, applicable exclusively to GET requests. For example, /static/*"
+                },
                 "RetainContent": {
                     "type": "string",
                     "default": "true",

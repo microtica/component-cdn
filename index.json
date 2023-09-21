@@ -8,6 +8,11 @@
             "Default": "",
             "Description": "The full domain name e.g. portal.microtica.io"
         },
+        "StaticDomainName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "The static domain name e.g. portal-static.microtica.io"
+        },
         "CertificateARN": {
             "Type": "String",
             "Default": "",
@@ -20,6 +25,10 @@
                 "true",
                 "false"
             ]
+        },
+        "ExcludedRestrictedPath": {
+            "Type": "String",
+            "Default": ""
         },
         "RetainContent": {
             "Type": "String",
@@ -89,6 +98,25 @@
                     "Ref": "RetainContent"
                 },
                 "false"
+            ]
+        },
+        "ShouldProvisionStaticDistribution": {
+            "Fn::And": [
+                {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "ExcludedRestrictedPath"
+                                },
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Ref": "ShouldRestrictAccess"
+                }
             ]
         }
     },
@@ -184,7 +212,20 @@
                             "Condition": {
                                 "StringEquals": {
                                     "AWS:SourceArn": {
-                                        "Fn::Sub": "arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudfront}"
+                                        "Fn::If": [
+                                            "ShouldProvisionStaticDistribution",
+                                            [
+                                                {
+                                                    "Fn::Sub": "arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudfront}"
+                                                },
+                                                {
+                                                    "Fn::Sub": "arn:aws:cloudfront::${AWS::AccountId}:distribution/${StaticCloudfront}"
+                                                }
+                                            ],
+                                            {
+                                                "Fn::Sub": "arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudfront}"
+                                            }
+                                        ]
                                     }
                                 }
                             }
@@ -284,6 +325,104 @@
                             }
                         ]
                     },
+                    "PriceClass": "PriceClass_All",
+                    "ViewerCertificate": {
+                        "Fn::If": [
+                            "HasCertificate",
+                            {
+                                "AcmCertificateArn": {
+                                    "Ref": "CertificateARN"
+                                },
+                                "SslSupportMethod": "sni-only",
+                                "MinimumProtocolVersion": "TLSv1.2_2021"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "StaticCloudfront": {
+            "Type": "AWS::CloudFront::Distribution",
+            "DependsOn": [
+                "WebsiteBucket"
+            ],
+            "Condition": "ShouldProvisionStaticDistribution",
+            "Properties": {
+                "DistributionConfig": {
+                    "Comment": "Cloudfront Distribution pointing to S3 bucket",
+                    "Origins": [
+                        {
+                            "DomainName": {
+                                "Fn::Sub": "${WebsiteBucket}.s3.${AWS::Region}.amazonaws.com"
+                            },
+                            "Id": "S3Origin",
+                            "OriginAccessControlId": {
+                                "Fn::GetAtt": "DistributionOriginAccessControl.Id"
+                            },
+                            "S3OriginConfig": {}
+                        }
+                    ],
+                    "Enabled": true,
+                    "HttpVersion": "http2",
+                    "DefaultRootObject": "index.html",
+                    "Aliases": {
+                        "Fn::If": [
+                            "HasDomain",
+                            [
+                                {
+                                    "Ref": "StaticDomainName"
+                                }
+                            ],
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    },
+                    "DefaultCacheBehavior": {
+                        "AllowedMethods": [
+                            "GET",
+                            "HEAD"
+                        ],
+                        "Compress": true,
+                        "TargetOriginId": "S3Origin",
+                        "ViewerProtocolPolicy": "redirect-to-https",
+                        "CachePolicyId": {
+                            "Ref": "DistributionCachePolicy"
+                        },
+                        "TrustedKeyGroups": {
+                            "Fn::If": [
+                                "ShouldRestrictAccess",
+                                [
+                                    {
+                                        "Ref": "WebsiteKeyGroup"
+                                    }
+                                ],
+                                {
+                                    "Ref": "AWS::NoValue"
+                                }
+                            ]
+                        }
+                    },
+                    "CacheBehaviors": [
+                        {
+                            "AllowedMethods": [
+                                "GET",
+                                "HEAD"
+                            ],
+                            "Compress": true,
+                            "TargetOriginId": "S3Origin",
+                            "ViewerProtocolPolicy": "redirect-to-https",
+                            "CachePolicyId": {
+                                "Ref": "DistributionCachePolicy"
+                            },
+                            "PathPattern": {
+                                "Ref": "ExcludedRestrictedPath"
+                            }
+                        }
+                    ],
                     "PriceClass": "PriceClass_All",
                     "ViewerCertificate": {
                         "Fn::If": [
@@ -649,9 +788,49 @@
             },
             "Description": "Website domain name"
         },
+        "StaticAccessUrl": {
+            "Value": {
+                "Fn::If": [
+                    "ShouldProvisionStaticDistribution",
+                    {
+                        "Fn::If": [
+                            "HasDomain",
+                            {
+                                "Fn::Sub": "https://${StaticDomainName}"
+                            },
+                            {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "https://",
+                                        {
+                                            "Fn::GetAtt": "StaticCloudfront.DomainName"
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    },
+                    ""
+                ]
+            },
+            "Description": "Static CDN domain name"
+        },
         "CNAME": {
             "Value": {
                 "Fn::GetAtt": "WebsiteCloudfront.DomainName"
+            },
+            "Description": "CloudFront distribution Domain"
+        },
+        "StaticCNAME": {
+            "Value": {
+                "Fn::If": [
+                    "ShouldProvisionStaticDistribution",
+                    {
+                        "Fn::GetAtt": "StaticCloudfront.DomainName"
+                    },
+                    ""
+                ]
             },
             "Description": "CloudFront distribution Domain"
         },

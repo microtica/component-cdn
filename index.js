@@ -12,8 +12,9 @@ const component = new NestedComponent(
 const { AWS_REGION } = process.env;
 
 async function handleCreate() {
-    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess } = await component.getInputParameters();
+    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess, DomainName } = await component.getInputParameters();
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
+    const staticDomainName = DomainName ? `${DomainName.split(".")[0]}-static.${DomainName.split(".").slice(1).join(".")}` : "";
 
     transformTemplate(RetainContent === "true");
 
@@ -36,7 +37,8 @@ async function handleCreate() {
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
             CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
             OriginRequestLambdaArn: originRequestLambdaArn,
-            ResourcePrefix: keyName
+            ResourcePrefix: keyName,
+            StaticDomainName: staticDomainName
         };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);
@@ -44,8 +46,9 @@ async function handleCreate() {
 }
 
 async function handleUpdate() {
-    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess } = await component.getInputParameters();
+    const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess, DomainName } = await component.getInputParameters();
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
+    const staticDomainName = DomainName ? `${DomainName.split(".")[0]}-static.${DomainName.split(".").slice(1).join(".")}` : "";
 
     transformTemplate(RetainContent === "true");
     const edgeBucketName = keyName.toLowerCase();
@@ -64,7 +67,8 @@ async function handleUpdate() {
             CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
             CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
             OriginRequestLambdaArn: originRequestLambdaArn,
-            ResourcePrefix: keyName
+            ResourcePrefix: keyName,
+            StaticDomainName: staticDomainName
         };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);

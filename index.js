@@ -14,7 +14,7 @@ const { AWS_REGION } = process.env;
 async function handleCreate() {
     const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess, DomainName } = await component.getInputParameters();
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
-    const staticDomainName = DomainName ? `${DomainName.split(".")[0]}-static.${DomainName.split(".").slice(1).join(".")}` : "";
+    const staticDomainName = DomainName.trim() ? `${DomainName.split(".")[0]}-static.${DomainName.split(".").slice(1).join(".")}` : "";
 
     transformTemplate(RetainContent === "true");
 
@@ -48,7 +48,7 @@ async function handleCreate() {
 async function handleUpdate() {
     const { RetainContent, MIC_ENVIRONMENT_ID, MIC_RESOURCE_ID, RestrictAccess, DomainName } = await component.getInputParameters();
     const keyName = `${MIC_ENVIRONMENT_ID}-${MIC_RESOURCE_ID}`;
-    const staticDomainName = DomainName ? `${DomainName.split(".")[0]}-static.${DomainName.split(".").slice(1).join(".")}` : "";
+    const staticDomainName = DomainName.trim() ? `${DomainName.split(".")[0]}-static.${DomainName.split(".").slice(1).join(".")}` : "";
 
     transformTemplate(RetainContent === "true");
     const edgeBucketName = keyName.toLowerCase();

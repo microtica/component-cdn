@@ -352,7 +352,7 @@
             "Condition": "ShouldProvisionStaticDistribution",
             "Properties": {
                 "DistributionConfig": {
-                    "Comment": "Cloudfront Distribution pointing to S3 bucket",
+                    "Comment": "Static Cloudfront Distribution pointing to S3 bucket",
                     "Origins": [
                         {
                             "DomainName": {

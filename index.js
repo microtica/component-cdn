@@ -27,10 +27,7 @@ async function handleCreate() {
     try {
         const originRequestLambdaArn = await createOriginRequestFunction(
             keyName,
-            imageConverterPackage,
-            MIC_ENVIRONMENT_ID,
-            MIC_RESOURCE_ID,
-            RestrictAccess
+            imageConverterPackage
         );
         return {
             KeyName: keyName,
@@ -58,9 +55,6 @@ async function handleUpdate() {
         const originRequestLambdaArn = await updateOriginRequestFunction(
             keyName,
             imageConverterPackage,
-            MIC_ENVIRONMENT_ID,
-            MIC_RESOURCE_ID,
-            RestrictAccess
         );
         return {
             KeyName: keyName,
@@ -82,7 +76,7 @@ async function handleDelete() {
     await deleteOriginRequestFunction(keyName);
 }
 
-async function createOriginRequestFunction(name, lambdaPackage, envId, resourceId, restrictAccess) {
+async function createOriginRequestFunction(name, lambdaPackage) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.createStack({
@@ -95,18 +89,6 @@ async function createOriginRequestFunction(name, lambdaPackage, envId, resourceI
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
             ParameterValue: lambdaPackage.s3Key
-        }, {
-            ParameterKey: "Region",
-            ParameterValue: AWS_REGION
-        }, {
-            ParameterKey: "EnvId",
-            ParameterValue: envId
-        }, {
-            ParameterKey: "ResourceId",
-            ParameterValue: resourceId
-        }, {
-            ParameterKey: "RestrictAccess",
-            ParameterValue: restrictAccess
         }]
     }).promise();
 
@@ -117,7 +99,7 @@ async function createOriginRequestFunction(name, lambdaPackage, envId, resourceI
     return stacks[0].Outputs.find(o => o.OutputKey === "Version").OutputValue;
 }
 
-async function updateOriginRequestFunction(name, lambdaPackage, envId, resourceId, restrictAccess) {
+async function updateOriginRequestFunction(name, lambdaPackage) {
     const cfn = new CloudFormation({ region: "us-east-1" });
 
     await cfn.updateStack({
@@ -130,18 +112,6 @@ async function updateOriginRequestFunction(name, lambdaPackage, envId, resourceI
         }, {
             ParameterKey: "ImageConverterLambdaBucketKey",
             ParameterValue: lambdaPackage.s3Key
-        }, {
-            ParameterKey: "Region",
-            ParameterValue: AWS_REGION
-        }, {
-            ParameterKey: "EnvId",
-            ParameterValue: envId
-        }, {
-            ParameterKey: "ResourceId",
-            ParameterValue: resourceId
-        }, {
-            ParameterKey: "RestrictAccess",
-            ParameterValue: restrictAccess
         }]
     }).promise();
 

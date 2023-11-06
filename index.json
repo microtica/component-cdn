@@ -152,6 +152,15 @@
                         }
                     ]
                 },
+                "LifecycleConfiguration": {
+                    "Rules": [
+                        {
+                            "Status": "Enabled",
+                            "Prefix": ".cache/",
+                            "ExpirationInDays": 1
+                        }
+                    ]
+                },
                 "CorsConfiguration": {
                     "Fn::If": [
                         "ShouldRestrictAccess",

@@ -8,18 +8,6 @@
         },
         "ImageConverterLambdaBucketKey": {
             "Type": "String"
-        },
-        "Region": {
-            "Type": "String"
-        },
-        "EnvId": {
-            "Type": "String"
-        },
-        "ResourceId": {
-            "Type": "String"
-        },
-        "RestrictAccess": {
-            "Type": "String"
         }
     },
     "Resources": {
@@ -54,6 +42,19 @@
                                 "Resource": "*"
                             }
                         ]
+                    },
+                    {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "s3:PutObject",
+                                    "s3:GetObject"
+                                ],
+                                "Resource": "*"
+                            }
+                        ]
                     }
                 ],
                 "AssumeRolePolicyDocument": {
@@ -72,20 +73,6 @@
                             ]
                         }
                     ]
-                },
-                "Tags": {
-                    "microtica:environment": {
-                        "Ref": "EnvId"
-                    },
-                    "microtica:resource": {
-                        "Ref": "ResourceId"
-                    },
-                    "microtica:region": {
-                        "Ref": "Region"
-                    },
-                    "microtica:resource:restrict-access": {
-                        "Ref": "RestrictAccess"
-                    }
                 }
             }
         },

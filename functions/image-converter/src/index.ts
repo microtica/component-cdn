@@ -21,7 +21,7 @@ exports.handler = async (event: CloudFrontRequestEvent) => {
         const sourceBucketName = request.origin?.s3?.domainName.split(".")[0]!;
         const sourceBucketKey = request.uri.replace(/^\/+/, "");
         const { dir: destDir, name: destFileName, ext: destFileExtension } = path.parse(sourceBucketKey);
-        const destBucketKey = `.cache/${destDir}/${destFileName}-${Date.now()}${destFileExtension}`;
+        const destBucketKey = `.temp/${destDir}/${destFileName}-${Date.now()}${destFileExtension}`;
 
         const { image, contentType } = await convertImage(
             sourceBucketName,

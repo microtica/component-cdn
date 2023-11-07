@@ -156,7 +156,7 @@
                     "Rules": [
                         {
                             "Status": "Enabled",
-                            "Prefix": ".cache/",
+                            "Prefix": ".temp/",
                             "ExpirationInDays": 1
                         }
                     ]

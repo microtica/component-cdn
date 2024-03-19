@@ -42,10 +42,9 @@ exports.handler = async (event: CloudFrontRequestEvent) => {
         return request;
     } catch (err) {
         console.log("Conversion ERROR", JSON.stringify(err));
-        return {
-            status: "400",
-            statusDescription: "Error converting the image. Please check if the requested file is actually a valid image."
-        };
+
+        // Return the original image
+        return request;
     }
 };
 

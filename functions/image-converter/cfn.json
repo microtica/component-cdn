@@ -18,6 +18,7 @@
                 "Handler": "dst/index.handler",
                 "Runtime": "nodejs16.x",
                 "Timeout": 30,
+                "MemorySize": 1024,
                 "CodeUri": {
                     "Bucket": {
                         "Ref": "ImageConverterLambdaBucket"

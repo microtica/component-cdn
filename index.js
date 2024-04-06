@@ -66,6 +66,13 @@ async function handleUpdate() {
         };
     } catch (error) {
         console.log("Error while provisioning Origin Request Lambda", error);
+        return {
+            KeyName: keyName,
+            CloudfrontKeyLambdaBucket: cloudfrontKeyPackage.s3Bucket,
+            CloudfrontKeyLambdaBucketKey: cloudfrontKeyPackage.s3Key,
+            ResourcePrefix: keyName,
+            StaticDomainName: staticDomainName
+        };
     }
 }
 
